@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, ChevronRight, ClipboardList, FileText, Hospital, LayoutDashboard, Menu, Settings, ShieldCheck, Users, X } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { SaarthiLogo } from "@/components/saarthi-ui";
@@ -34,7 +34,7 @@ const portalConfig = {
   },
 } as const;
 
-export function PortalShell({ kind, children }: { kind: PortalKind; children: React.ReactNode }) {
+export function PortalShell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const config = portalConfig[kind];
