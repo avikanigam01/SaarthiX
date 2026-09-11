@@ -59,6 +59,20 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-prism-surface: var(--prism-surface);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
 }
 
 :root {
@@ -95,6 +109,20 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --brand: oklch(0.52 0.22 258);
+  --brand-foreground: oklch(0.985 0.01 250);
+  --brand-soft: oklch(0.93 0.06 258);
+  --prism-surface: oklch(0.965 0.018 265);
+  --success: oklch(0.62 0.15 163);
+  --success-foreground: oklch(0.29 0.09 163);
+  --success-soft: oklch(0.92 0.05 163);
+  --warning: oklch(0.75 0.15 76);
+  --warning-foreground: oklch(0.36 0.08 76);
+  --warning-soft: oklch(0.96 0.06 82);
+  --danger: oklch(0.58 0.19 27);
+  --danger-soft: oklch(0.95 0.04 27);
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-heading: "Space Grotesk", "Inter", system-ui, sans-serif;
 }
 
 .dark {
@@ -130,6 +158,18 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --brand: oklch(0.72 0.16 258);
+  --brand-foreground: oklch(0.19 0.04 265);
+  --brand-soft: oklch(0.28 0.08 258);
+  --prism-surface: oklch(0.17 0.04 265);
+  --success: oklch(0.72 0.15 163);
+  --success-foreground: oklch(0.25 0.06 163);
+  --success-soft: oklch(0.25 0.07 163);
+  --warning: oklch(0.8 0.15 76);
+  --warning-foreground: oklch(0.25 0.07 76);
+  --warning-soft: oklch(0.27 0.07 76);
+  --danger: oklch(0.72 0.17 27);
+  --danger-soft: oklch(0.28 0.08 27);
 }
 
 @layer base {
@@ -138,7 +178,20 @@
   }
 
   body {
-    background-color: var(--color-background);
+    background-color: var(--color-prism-surface);
     color: var(--color-foreground);
+    font-family: var(--font-body);
   }
+}
+
+@utility bg-gradient-prism {
+  background-image: linear-gradient(135deg, oklch(0.64 0.2 300), var(--color-brand), oklch(0.72 0.14 170));
+}
+
+@utility shadow-brand {
+  box-shadow: 0 14px 28px -14px color-mix(in oklab, var(--color-brand) 55%, transparent);
+}
+
+@utility bg-prism-page {
+  background-image: radial-gradient(900px 520px at 88% -12%, oklch(0.86 0.06 300 / 0.65), transparent 62%), radial-gradient(800px 520px at 4% 0%, oklch(0.87 0.07 175 / 0.55), transparent 60%), linear-gradient(180deg, var(--color-prism-surface), var(--color-background));
 }

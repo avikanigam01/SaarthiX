@@ -1,24 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
-  component: Index,
-});
+import { HomePage } from "@/components/saarthi-pages";
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
+export const Route = createFileRoute("/")({
+  head: () => ({ meta: [
+    { title: "SaarthiX — Healthcare access without unnecessary journeys" },
+    { name: "description", content: "SaarthiX helps patients identify appropriate care, verify real service availability, navigate referrals, and stay connected after a healthcare visit." },
+    { property: "og:title", content: "SaarthiX — Right Care. Right Place. Right Time." },
+    { property: "og:description", content: "Healthcare access should not require unnecessary journeys." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
+  component: HomePage,
+});
