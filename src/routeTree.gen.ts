@@ -10,33 +10,271 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PatientAssessmentRouteImport } from './routes/patient.assessment'
+import { Route as PatientDashboardRouteImport } from './routes/patient.dashboard'
+import { Route as PatientFacilitiesRouteImport } from './routes/patient.facilities'
+import { Route as PatientFollowupsRouteImport } from './routes/patient.followups'
+import { Route as PatientJourneyRouteImport } from './routes/patient.journey'
+import { Route as PatientNotificationsRouteImport } from './routes/patient.notifications'
+import { Route as PatientProfileRouteImport } from './routes/patient.profile'
+import { Route as PatientReferralsRouteImport } from './routes/patient.referrals'
+import { Route as PatientSettingsRouteImport } from './routes/patient.settings'
+import { Route as PatientVisitsRouteImport } from './routes/patient.visits'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientAssessmentRoute = PatientAssessmentRouteImport.update({
+  id: '/patient/assessment',
+  path: '/patient/assessment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientDashboardRoute = PatientDashboardRouteImport.update({
+  id: '/patient/dashboard',
+  path: '/patient/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientFacilitiesRoute = PatientFacilitiesRouteImport.update({
+  id: '/patient/facilities',
+  path: '/patient/facilities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientFollowupsRoute = PatientFollowupsRouteImport.update({
+  id: '/patient/followups',
+  path: '/patient/followups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientJourneyRoute = PatientJourneyRouteImport.update({
+  id: '/patient/journey',
+  path: '/patient/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientNotificationsRoute = PatientNotificationsRouteImport.update({
+  id: '/patient/notifications',
+  path: '/patient/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientProfileRoute = PatientProfileRouteImport.update({
+  id: '/patient/profile',
+  path: '/patient/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientReferralsRoute = PatientReferralsRouteImport.update({
+  id: '/patient/referrals',
+  path: '/patient/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientSettingsRoute = PatientSettingsRouteImport.update({
+  id: '/patient/settings',
+  path: '/patient/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientVisitsRoute = PatientVisitsRouteImport.update({
+  id: '/patient/visits',
+  path: '/patient/visits',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/patient/assessment': typeof PatientAssessmentRoute
+  '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/facilities': typeof PatientFacilitiesRoute
+  '/patient/followups': typeof PatientFollowupsRoute
+  '/patient/journey': typeof PatientJourneyRoute
+  '/patient/notifications': typeof PatientNotificationsRoute
+  '/patient/profile': typeof PatientProfileRoute
+  '/patient/referrals': typeof PatientReferralsRoute
+  '/patient/settings': typeof PatientSettingsRoute
+  '/patient/visits': typeof PatientVisitsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/patient/assessment': typeof PatientAssessmentRoute
+  '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/facilities': typeof PatientFacilitiesRoute
+  '/patient/followups': typeof PatientFollowupsRoute
+  '/patient/journey': typeof PatientJourneyRoute
+  '/patient/notifications': typeof PatientNotificationsRoute
+  '/patient/profile': typeof PatientProfileRoute
+  '/patient/referrals': typeof PatientReferralsRoute
+  '/patient/settings': typeof PatientSettingsRoute
+  '/patient/visits': typeof PatientVisitsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/patient/assessment': typeof PatientAssessmentRoute
+  '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/facilities': typeof PatientFacilitiesRoute
+  '/patient/followups': typeof PatientFollowupsRoute
+  '/patient/journey': typeof PatientJourneyRoute
+  '/patient/notifications': typeof PatientNotificationsRoute
+  '/patient/profile': typeof PatientProfileRoute
+  '/patient/referrals': typeof PatientReferralsRoute
+  '/patient/settings': typeof PatientSettingsRoute
+  '/patient/visits': typeof PatientVisitsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/forgot-password'
+    | '/how-it-works'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/reset-password'
+    | '/patient/assessment'
+    | '/patient/dashboard'
+    | '/patient/facilities'
+    | '/patient/followups'
+    | '/patient/journey'
+    | '/patient/notifications'
+    | '/patient/profile'
+    | '/patient/referrals'
+    | '/patient/settings'
+    | '/patient/visits'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/forgot-password'
+    | '/how-it-works'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/reset-password'
+    | '/patient/assessment'
+    | '/patient/dashboard'
+    | '/patient/facilities'
+    | '/patient/followups'
+    | '/patient/journey'
+    | '/patient/notifications'
+    | '/patient/profile'
+    | '/patient/referrals'
+    | '/patient/settings'
+    | '/patient/visits'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/forgot-password'
+    | '/how-it-works'
+    | '/login'
+    | '/privacy'
+    | '/register'
+    | '/reset-password'
+    | '/patient/assessment'
+    | '/patient/dashboard'
+    | '/patient/facilities'
+    | '/patient/followups'
+    | '/patient/journey'
+    | '/patient/notifications'
+    | '/patient/profile'
+    | '/patient/referrals'
+    | '/patient/settings'
+    | '/patient/visits'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ContactRoute: typeof ContactRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  HowItWorksRoute: typeof HowItWorksRoute
+  LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  PatientAssessmentRoute: typeof PatientAssessmentRoute
+  PatientDashboardRoute: typeof PatientDashboardRoute
+  PatientFacilitiesRoute: typeof PatientFacilitiesRoute
+  PatientFollowupsRoute: typeof PatientFollowupsRoute
+  PatientJourneyRoute: typeof PatientJourneyRoute
+  PatientNotificationsRoute: typeof PatientNotificationsRoute
+  PatientProfileRoute: typeof PatientProfileRoute
+  PatientReferralsRoute: typeof PatientReferralsRoute
+  PatientSettingsRoute: typeof PatientSettingsRoute
+  PatientVisitsRoute: typeof PatientVisitsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +286,155 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/assessment': {
+      id: '/patient/assessment'
+      path: '/patient/assessment'
+      fullPath: '/patient/assessment'
+      preLoaderRoute: typeof PatientAssessmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/dashboard': {
+      id: '/patient/dashboard'
+      path: '/patient/dashboard'
+      fullPath: '/patient/dashboard'
+      preLoaderRoute: typeof PatientDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/facilities': {
+      id: '/patient/facilities'
+      path: '/patient/facilities'
+      fullPath: '/patient/facilities'
+      preLoaderRoute: typeof PatientFacilitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/followups': {
+      id: '/patient/followups'
+      path: '/patient/followups'
+      fullPath: '/patient/followups'
+      preLoaderRoute: typeof PatientFollowupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/journey': {
+      id: '/patient/journey'
+      path: '/patient/journey'
+      fullPath: '/patient/journey'
+      preLoaderRoute: typeof PatientJourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/notifications': {
+      id: '/patient/notifications'
+      path: '/patient/notifications'
+      fullPath: '/patient/notifications'
+      preLoaderRoute: typeof PatientNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/profile': {
+      id: '/patient/profile'
+      path: '/patient/profile'
+      fullPath: '/patient/profile'
+      preLoaderRoute: typeof PatientProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/referrals': {
+      id: '/patient/referrals'
+      path: '/patient/referrals'
+      fullPath: '/patient/referrals'
+      preLoaderRoute: typeof PatientReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/settings': {
+      id: '/patient/settings'
+      path: '/patient/settings'
+      fullPath: '/patient/settings'
+      preLoaderRoute: typeof PatientSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/visits': {
+      id: '/patient/visits'
+      path: '/patient/visits'
+      fullPath: '/patient/visits'
+      preLoaderRoute: typeof PatientVisitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ContactRoute: ContactRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  HowItWorksRoute: HowItWorksRoute,
+  LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
+  RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  PatientAssessmentRoute: PatientAssessmentRoute,
+  PatientDashboardRoute: PatientDashboardRoute,
+  PatientFacilitiesRoute: PatientFacilitiesRoute,
+  PatientFollowupsRoute: PatientFollowupsRoute,
+  PatientJourneyRoute: PatientJourneyRoute,
+  PatientNotificationsRoute: PatientNotificationsRoute,
+  PatientProfileRoute: PatientProfileRoute,
+  PatientReferralsRoute: PatientReferralsRoute,
+  PatientSettingsRoute: PatientSettingsRoute,
+  PatientVisitsRoute: PatientVisitsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
