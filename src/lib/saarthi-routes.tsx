@@ -26,6 +26,11 @@ const publicCopy: Record<string, PublicCopy> = {
     title: "A guided path to the right care",
     description: "From a first question to a completed, tracked healthcare journey — need, urgency, facility, availability, care, referral, follow-up.",
   },
+  "/terms": {
+    eyebrow: "Terms of use",
+    title: "How SaarthiX may be used",
+    description: "SaarthiX is a coordination and decision-support tool. Using it means accepting that it does not replace professional medical judgement.",
+  },
 };
 
 const fallbackPublicCopy: PublicCopy = publicCopy["/about"]!;
