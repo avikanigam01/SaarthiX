@@ -1,3 +1,3 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicHead, publicPage } from "./public-pages";
+import { publicHead, publicPage } from "@/lib/saarthi-routes";
 export const Route = createFileRoute("/privacy")({ head: publicHead("/privacy"), component: publicPage("/privacy") });

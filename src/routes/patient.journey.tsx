@@ -1,3 +1,3 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { patientRoute } from "./patient-pages";
-export const Route = createFileRoute("/patient/journey")(patientRoute("/patient/journey"));
+import { portalComponent, portalHead } from "@/lib/saarthi-routes";
+export const Route = createFileRoute("/patient/journey")({ head: portalHead("patient", "journey"), component: portalComponent("patient", "journey") });
