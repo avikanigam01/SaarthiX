@@ -1,7 +1,57 @@
 import type { ReactNode } from "react";
-import { AssessmentPage, DetailPage, FacilityDetailPage, PortalPage } from "@/components/saarthi-pages";
+import { AssessmentPage, DetailPage, FacilityDetailPage, InfoPage, PortalPage } from "@/components/saarthi-pages";
 
 type PortalKind = "patient" | "hospital" | "coordinator" | "admin";
+
+type PublicCopy = { eyebrow: string; title: string; description: string };
+
+const publicCopy: Record<string, PublicCopy> = {
+  "/about": {
+    eyebrow: "About SaarthiX",
+    title: "Coordination, not diagnosis",
+    description: "SaarthiX connects patients, facilities, and care teams so real, verified availability replaces guesswork and repeated visits.",
+  },
+  "/contact": {
+    eyebrow: "Contact SaarthiX",
+    title: "Talk to the SaarthiX team",
+    description: "Reach out about patient support, facility onboarding, partnerships, or general questions about the platform.",
+  },
+  "/privacy": {
+    eyebrow: "Safety & privacy",
+    title: "Your data, your control",
+    description: "SaarthiX collects only the information required for care coordination and keeps every action visible to authorized users only.",
+  },
+  "/how-it-works": {
+    eyebrow: "How it works",
+    title: "A guided path to the right care",
+    description: "From a first question to a completed, tracked healthcare journey — need, urgency, facility, availability, care, referral, follow-up.",
+  },
+};
+
+const fallbackPublicCopy: PublicCopy = publicCopy["/about"]!;
+
+function resolvePublicCopy(path: string): PublicCopy {
+  return publicCopy[path] ?? fallbackPublicCopy;
+}
+
+export function publicHead(path: string) {
+  const copy = resolvePublicCopy(path);
+  return () => ({
+    meta: [
+      { title: `${copy.title} — SaarthiX` },
+      { name: "description", content: copy.description },
+      { property: "og:title", content: `${copy.title} — SaarthiX` },
+      { property: "og:description", content: copy.description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  });
+}
+
+export function publicPage(path: string): () => ReactNode {
+  const copy = resolvePublicCopy(path);
+  return () => <InfoPage eyebrow={copy.eyebrow} title={copy.title} description={copy.description} />;
+}
 
 const portalDescriptions: Record<string, string> = {
   dashboard: "Review your connected workspace and next safe steps.",
