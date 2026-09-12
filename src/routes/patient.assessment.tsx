@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { AssessmentPage } from "@/lib/saarthi-routes";
+export const Route = createFileRoute("/patient/assessment")({ head: () => ({ meta: [{ title: "Care assessment — SaarthiX" }, { name: "description", content: "Begin a guided assessment to coordinate your next safe healthcare step." }, { property: "og:title", content: "Care assessment — SaarthiX" }, { property: "og:description", content: "Begin a guided assessment to coordinate your next safe healthcare step." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }), component: AssessmentPage });
