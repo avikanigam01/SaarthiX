@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyState, SafetyNotice, SaarthiLogo, SectionIntro, StatusBadge, TimelineStep } from "@/components/saarthi-ui";
 import { PortalShell } from "@/components/portal-shell";
+import { AssessmentResultPage, type AssessmentResult } from "@/pages/patient/assessment-result";
 
 const steps = [
   ["01", "Tell us what you need", "Describe a symptom, test, medicine need, or follow-up in plain language."],
@@ -97,7 +98,74 @@ function Field({ id, label, placeholder, type = "text", value, onChange, error, 
   return <label className="block text-sm font-medium text-foreground" htmlFor={id}><span>{label}</span><Input id={id} className="mt-2 h-11" type={type} placeholder={placeholder} value={value} onChange={(event) => onChange(event.target.value)} autoComplete={autoComplete} required aria-invalid={error ? true : undefined} aria-describedby={error ? errorId : undefined} />{error ? <span id={errorId} role="alert" className="mt-1.5 block text-xs font-medium text-destructive">{error}</span> : null}</label>;
 }
 
-export function AssessmentPage() { const [step, setStep] = useState(1); const [selected, setSelected] = useState(""); const options = ["Symptoms", "Specialist consultation", "Diagnostic test", "Medicine availability", "Existing treatment follow-up", "Other healthcare need"]; const labels = ["What do you need help with?", "Tell us a little more", "How long has this been happening?", "How severe does it feel?", "Do you have any emergency warning signs?", "Where would you prefer to receive care?"]; return <PublicShell><main className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-16"><div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]"><div><SectionIntro eyebrow="Care assessment" title="A calm, guided beginning" description="Answer only what is needed to help coordinate your next step. You can stop at any time." /><div className="mt-8"><SafetyNotice emergency /></div></div><div className="rounded-3xl border border-border/70 bg-card/75 p-6 shadow-brand sm:p-8"><div className="flex items-center justify-between"><span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Step {step} of 6</span><span className="text-xs font-semibold text-brand">{Math.round((step / 6) * 100)}%</span></div><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${(step / 6) * 100}%` }} /></div><h2 className="mt-7 font-display text-2xl font-bold tracking-tight">{labels[step - 1]}</h2>{step === 1 ? <div className="mt-5 grid gap-3 sm:grid-cols-2">{options.map((option) => <button type="button" key={option} onClick={() => setSelected(option)} className={`flex min-h-12 items-center gap-3 rounded-xl border px-4 text-left text-sm transition-colors ${selected === option ? "border-brand bg-brand-soft text-brand" : "border-border bg-background hover:border-brand/40"}`}><span className={`grid size-4 place-items-center rounded-full border ${selected === option ? "border-brand bg-brand" : "border-muted-foreground/40"}`}>{selected === option ? <Check className="size-3 text-brand-foreground" /> : null}</span>{option}</button>)}</div> : <div className="mt-5 space-y-4"><Textarea className="min-h-32" placeholder={step === 5 ? "Select yes or no, then describe anything important." : "Share only the information needed for care coordination."} /><p className="text-xs text-muted-foreground">Please do not include information that is not needed for this assessment.</p></div>}<div className="mt-8 flex items-center justify-between gap-3"><Button variant="ghost" onClick={() => setStep((value) => Math.max(1, value - 1))} disabled={step === 1}><ChevronLeft />Back</Button>{step < 6 ? <Button onClick={() => setStep((value) => Math.min(6, value + 1))} disabled={step === 1 && !selected}>Continue <ArrowRight /></Button> : <Button asChild><Link to="/patient/dashboard">Save assessment <ArrowRight /></Link></Button>}</div></div></div></main></PublicShell>; }
+export function AssessmentPage() {
+  const [step, setStep] = useState(1);
+  const [selected, setSelected] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const totalSteps = 6;
+  const options = ["Symptoms", "Specialist consultation", "Diagnostic test", "Medicine availability", "Existing treatment follow-up", "Other healthcare need"];
+  const labels = ["What do you need help with?", "Tell us a little more", "How long has this been happening?", "How severe does it feel?", "Do you have any emergency warning signs?", "Where would you prefer to receive care?"];
+
+  function handleStartOver() {
+    setSubmitted(false);
+    setStep(1);
+    setSelected("");
+  }
+
+  // Phase 1 note: no backend exists yet, so a completed assessment has
+  // no real urgency/care-level/department to show. Passing `null` keeps
+  // the result page honest instead of inventing a fake outcome. Phase 2
+  // replaces this with the actual AI Edge Function response.
+  const result: AssessmentResult = null;
+
+  return (
+    <PublicShell>
+      <main className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-16">
+        <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
+          <div>
+            <SectionIntro eyebrow="Care assessment" title="A calm, guided beginning" description="Answer only what is needed to help coordinate your next step. You can stop at any time." />
+            <div className="mt-8"><SafetyNotice emergency /></div>
+          </div>
+          {submitted ? (
+            <AssessmentResultPage result={result} onStartOver={handleStartOver} />
+          ) : (
+            <div className="rounded-3xl border border-border/70 bg-card/75 p-6 shadow-brand sm:p-8">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Step {step} of {totalSteps}</span>
+                <span className="text-xs font-semibold text-brand">{Math.round((step / totalSteps) * 100)}%</span>
+              </div>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${(step / totalSteps) * 100}%` }} /></div>
+              <h2 className="mt-7 font-display text-2xl font-bold tracking-tight">{labels[step - 1]}</h2>
+              {step === 1 ? (
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {options.map((option) => (
+                    <button type="button" key={option} onClick={() => setSelected(option)} className={`flex min-h-12 items-center gap-3 rounded-xl border px-4 text-left text-sm transition-colors ${selected === option ? "border-brand bg-brand-soft text-brand" : "border-border bg-background hover:border-brand/40"}`}>
+                      <span className={`grid size-4 place-items-center rounded-full border ${selected === option ? "border-brand bg-brand" : "border-muted-foreground/40"}`}>{selected === option ? <Check className="size-3 text-brand-foreground" /> : null}</span>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-5 space-y-4">
+                  <Textarea className="min-h-32" placeholder={step === 5 ? "Select yes or no, then describe anything important." : "Share only the information needed for care coordination."} />
+                  <p className="text-xs text-muted-foreground">Please do not include information that is not needed for this assessment.</p>
+                </div>
+              )}
+              <div className="mt-8 flex items-center justify-between gap-3">
+                <Button variant="ghost" onClick={() => setStep((value) => Math.max(1, value - 1))} disabled={step === 1}><ChevronLeft />Back</Button>
+                {step < totalSteps ? (
+                  <Button onClick={() => setStep((value) => Math.min(totalSteps, value + 1))} disabled={step === 1 && !selected}>Continue <ArrowRight /></Button>
+                ) : (
+                  <Button onClick={() => setSubmitted(true)}>Save assessment <ArrowRight /></Button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+    </PublicShell>
+  );
+}
 
 const pageCopy: Record<string, { title: string; description: string }> = { dashboard: { title: "Your healthcare journey", description: "See active care coordination records, referrals, visits, follow-ups, and notifications when connected." }, facilities: { title: "Find appropriate care", description: "Search connected facilities and verify current services before travelling." }, referrals: { title: "Your referrals", description: "Track referrals shared with facilities you are authorized to access." }, visits: { title: "Your visits", description: "Review visits associated with your authenticated patient account." }, followups: { title: "Your follow-ups", description: "Stay connected with scheduled care follow-ups and reminders." }, notifications: { title: "Notifications", description: "Important journey updates appear here when records are available." }, profile: { title: "Your profile", description: "View and update the personal information you are permitted to manage." }, settings: { title: "Account settings", description: "Manage your account preferences and security settings." }, departments: { title: "Departments", description: "Manage departments belonging to your authorized facility." }, services: { title: "Services", description: "Manage facility services and their current availability." }, doctors: { title: "Doctors", description: "Manage authorized doctor records and department assignments." }, diagnostics: { title: "Diagnostics", description: "Manage diagnostic services and last-updated availability." }, medicines: { title: "Medicine inventory", description: "Manage medicine stock, thresholds, and stock movements." }, patients: { title: "Patients", description: "View only patients and minimum necessary information you are authorized to access." }, inventory: { title: "Inventory", description: "Review inventory records available to your authorized administration workspace." }, analytics: { title: "Analytics", description: "Review metrics calculated from connected records only." }, "audit-logs": { title: "Audit logs", description: "Review authorized administrative activity without unnecessary sensitive information." }, users: { title: "User management", description: "Manage accounts, approved roles, facility association, and permissions when authorized." }, profileFacility: { title: "Facility profile", description: "View and manage permitted facility information and verification details." }, settingsFacility: { title: "Workspace settings", description: "Manage settings available to your authorized facility workspace." } };
 
@@ -108,7 +176,16 @@ function actionLabel(page: string) { return ["departments", "services", "doctors
 function DashboardContent({ kind }: { kind: "patient" | "hospital" | "coordinator" | "admin" }) { const patient = kind === "patient"; return <><div className="space-y-6"><div className="rounded-3xl border border-border/70 bg-card/70 p-6 shadow-card"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{patient ? "Active healthcare journey" : "Connected workspace"}</p><h2 className="mt-2 font-display text-2xl font-bold tracking-tight">{patient ? "No active healthcare journey." : "No connected records yet."}</h2><p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">{patient ? "Start with a short assessment to coordinate your next safe step." : "Live workspace numbers and records will appear once authorized data is connected."}</p></div><StatusBadge status="neutral" /></div>{patient ? <Button asChild className="mt-5 rounded-full"><Link to="/patient/assessment">Start Care Assessment <ArrowRight /></Link></Button> : null}</div><div className="grid gap-4 sm:grid-cols-2"><EmptyState title={patient ? "No active referral." : "No referrals found."} description="Real records will appear here when they are available." /><EmptyState title={patient ? "No follow-ups scheduled." : "No pending work."} description="This state stays empty until the connected system has records." /></div></div><div className="space-y-6"><div className="rounded-3xl border border-border/70 bg-card/70 p-6 shadow-card"><h2 className="font-display text-lg font-semibold">Journey timeline</h2><ol className="mt-6"><TimelineStep index={1} title="Need submitted" state="upcoming" /><TimelineStep index={2} title="Assessment completed" state="upcoming" /><TimelineStep index={3} title="Facility identified" state="upcoming" /><TimelineStep index={4} title="Availability confirmed" state="upcoming" /></ol></div><SafetyNotice /></div></>; }
 function FacilitiesContent() { return <div className="xl:col-span-2"><div className="rounded-3xl border border-border/70 bg-card/70 p-6 shadow-card"><div className="grid gap-3 md:grid-cols-[1.2fr_1fr_1fr_auto]"><label className="sr-only" htmlFor="facility-search">Search facilities</label><div className="relative"><Search className="absolute left-3 top-3 size-4 text-muted-foreground" /><Input id="facility-search" className="h-10 pl-9" placeholder="District or area" /></div><Input className="h-10" placeholder="Facility type" /><Input className="h-10" placeholder="Department or service" /><Button>Search</Button></div><div className="mt-6"><EmptyState title="No verified healthcare facilities are currently available for this area." description="Facility availability will appear here once verified records are connected. No facility has been invented or assumed." icon={MapPin} /></div></div></div>; }
 
-export function DetailPage({ kind, section }: { kind: "patient" | "hospital" | "coordinator" | "admin"; section: string }) { const backPath = kind === "patient" && section === "facilities" ? "/patient/facilities" : kind === "hospital" && section === "patients" ? "/hospital/patients" : kind === "hospital" && section === "referrals" ? "/hospital/referrals" : kind === "coordinator" && section === "patients" ? "/coordinator/patients" : kind === "coordinator" && section === "referrals" ? "/coordinator/referrals" : kind === "coordinator" && section === "facilities" ? "/coordinator/facilities" : kind === "admin" && section === "facilities" ? "/admin/facilities" : kind === "admin" && section === "users" ? "/admin/users" : "/admin/referrals"; return <PortalShell kind={kind}><Button asChild variant="ghost" className="mb-5 -ml-3"><Link to={backPath}><ChevronLeft />Back to {section}</Link></Button><SectionIntro eyebrow="Record detail" title="No record selected" description="A detail view will appear after a real, authorized record is selected." /><div className="mt-8"><EmptyState title="No record available yet." description="This detail page does not display placeholder healthcare information." /></div></PortalShell>; }
+export function DetailPage({ kind, section }: { kind: "patient" | "hospital" | "coordinator" | "admin"; section: string }) {
+  // Every portal's list route lives at /{kind}/{section}, so the back
+  // link for any detail page follows that same pattern. Previously this
+  // only covered a few hardcoded combinations and silently sent every
+  // other section (patient journey/referrals/followups, hospital
+  // visits/followups, admin services/inventory/analytics/audit-logs,
+  // coordinator notifications, etc.) back to "/admin/referrals".
+  const backPath = `/${kind}/${section}`;
+  return <PortalShell kind={kind}><Button asChild variant="ghost" className="mb-5 -ml-3"><Link to={backPath}><ChevronLeft />Back to {section}</Link></Button><SectionIntro eyebrow="Record detail" title="No record selected" description="A detail view will appear after a real, authorized record is selected." /><div className="mt-8"><EmptyState title="No record available yet." description="This detail page does not display placeholder healthcare information." /></div></PortalShell>;
+}
 
 export function FacilityDetailPage() { return <PortalShell kind="patient"><Button asChild variant="ghost" className="mb-5 -ml-3"><Link to="/patient/facilities"><ChevronLeft />Back to facilities</Link></Button><SectionIntro eyebrow="Facility details" title="No facility selected" description="Choose a connected facility from the search results to review its verified information." /><div className="mt-8"><EmptyState title="No facility details available yet." description="Facility name, services, departments, doctors, diagnostics, contact information, and last-updated availability will appear here from connected records." icon={Hospital} /></div></PortalShell>; }
 
