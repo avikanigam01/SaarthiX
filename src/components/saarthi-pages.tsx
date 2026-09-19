@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, CalendarDays, Check, ChevronLeft, CircleHelp, FileText, Hospital, LockKeyhole, MapPin, Menu, Search, Stethoscope, UsersRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { EmptyState, SafetyNotice, SaarthiLogo, SectionIntro, StatusBadge, TimelineStep } from "@/components/saarthi-ui";
 import { PortalShell } from "@/components/portal-shell";
 import { AssessmentResultPage, type AssessmentResult } from "@/pages/patient/assessment-result";
+import { registerPatient, sendPasswordResetEmail, signIn, updatePassword } from "@/services/auth";
 
 const steps = [
   ["01", "Tell us what you need", "Describe a symptom, test, medicine need, or follow-up in plain language."],
@@ -60,32 +61,101 @@ function validateAuthForm(mode: AuthMode, form: AuthFormState): AuthFormErrors {
 
 export function AuthPage({ mode }: { mode: AuthMode }) {
   const copy = authCopy[mode];
+  const navigate = useNavigate();
   const [form, setForm] = useState<AuthFormState>({ firstName: "", lastName: "", email: "", password: "", agreed: false });
   const [errors, setErrors] = useState<AuthFormErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   function updateField<K extends keyof AuthFormState>(key: K, value: AuthFormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
     setErrors((current) => ({ ...current, [key]: undefined }));
+    setServerError(null);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors = validateAuthForm(mode, form);
     setErrors(nextErrors);
-    setSubmitted(Object.keys(nextErrors).length === 0);
+    if (Object.keys(nextErrors).length > 0) return;
+
+    setServerError(null);
+    setSubmitting(true);
+    try {
+      if (mode === "login") {
+        const result = await signIn({ email: form.email, password: form.password });
+        if (!result.ok) {
+          setServerError(result.message);
+          return;
+        }
+        setSubmitted(true);
+        navigate({ to: "/patient/dashboard" });
+        return;
+      }
+
+      if (mode === "register") {
+        const result = await registerPatient({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          password: form.password,
+        });
+        if (!result.ok) {
+          setServerError(result.message);
+          return;
+        }
+        setSubmitted(true);
+        setSuccessMessage(
+          result.data.emailConfirmationRequired
+            ? "Account created. Please check your email to verify your address before signing in."
+            : "Account created. You're signed in."
+        );
+        if (!result.data.emailConfirmationRequired) {
+          navigate({ to: "/patient/dashboard" });
+        }
+        return;
+      }
+
+      if (mode === "forgot") {
+        const result = await sendPasswordResetEmail(form.email);
+        if (!result.ok) {
+          setServerError(result.message);
+          return;
+        }
+        setSubmitted(true);
+        setSuccessMessage("If an account exists for that email, a reset link has been sent.");
+        return;
+      }
+
+      if (mode === "reset") {
+        const result = await updatePassword(form.password);
+        if (!result.ok) {
+          setServerError(result.message);
+          return;
+        }
+        setSubmitted(true);
+        setSuccessMessage("Your password has been updated. You can now sign in.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   }
 
+  const showSuccessOnly = submitted && successMessage && (mode === "forgot" || mode === "reset" || mode === "register");
+
   return <PublicShell><main className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center justify-center px-5 py-12 sm:px-8"><div className="grid w-full max-w-4xl gap-10 lg:grid-cols-[0.85fr_1.15fr]"><div className="hidden rounded-3xl border border-border/70 bg-brand-soft/45 p-8 lg:block"><SaarthiLogo /><h1 className="mt-16 max-w-sm font-display text-4xl font-bold tracking-tight">Right Care. Right Place. Right Time.</h1><p className="mt-5 text-muted-foreground">Your records and permissions stay connected to the right care journey.</p><div className="mt-10"><SafetyNotice /></div></div><div className="rounded-3xl border border-border/70 bg-card/75 p-6 shadow-brand sm:p-8"><div className="mx-auto max-w-md"><SectionIntro title={copy[0]} description={copy[1]} />
-    {submitted ? (
-      <div role="status" className="mt-6 rounded-2xl bg-success-soft p-4 text-sm text-success-foreground">Your details look valid. Sign-in isn't connected to a backend yet — this will work once SaarthiX is connected to Supabase.</div>
+    {showSuccessOnly ? (
+      <div role="status" className="mt-6 rounded-2xl bg-success-soft p-4 text-sm text-success-foreground">{successMessage}</div>
     ) : (
       <form noValidate className="contents" onSubmit={handleSubmit}>
+        {serverError ? <div role="alert" className="mt-6 rounded-2xl bg-destructive/10 p-4 text-sm font-medium text-destructive">{serverError}</div> : null}
         {mode === "register" ? <div className="mt-6 grid gap-4 sm:grid-cols-2"><Field id="first-name" label="First name" placeholder="Enter your first name" value={form.firstName} onChange={(value) => updateField("firstName", value)} error={errors.firstName} autoComplete="given-name" /><Field id="last-name" label="Last name" placeholder="Enter your last name" value={form.lastName} onChange={(value) => updateField("lastName", value)} error={errors.lastName} autoComplete="family-name" /></div> : null}
         {mode !== "reset" ? <div className="mt-6"><Field id="email" label="Email address" type="email" placeholder="you@example.com" value={form.email} onChange={(value) => updateField("email", value)} error={errors.email} autoComplete="email" /></div> : null}
         {mode === "register" || mode === "login" || mode === "reset" ? <div className="mt-4"><Field id="password" label="Password" type="password" placeholder="Enter your password" value={form.password} onChange={(value) => updateField("password", value)} error={errors.password} autoComplete={mode === "login" ? "current-password" : "new-password"} /></div> : null}
         {mode === "register" ? <div className="mt-4"><label className="flex items-start gap-2 text-sm text-muted-foreground"><input type="checkbox" className="mt-1 accent-brand" checked={form.agreed} onChange={(event) => updateField("agreed", event.target.checked)} aria-invalid={errors.agreed ? true : undefined} aria-describedby={errors.agreed ? "agreed-error" : undefined} />I agree to the SaarthiX <Link to="/terms" className="text-brand hover:underline">terms</Link> and <Link to="/privacy" className="text-brand hover:underline">privacy notice</Link>.</label>{errors.agreed ? <span id="agreed-error" role="alert" className="mt-1.5 block text-xs font-medium text-destructive">{errors.agreed}</span> : null}</div> : null}
-        <Button type="submit" className="mt-6 w-full rounded-xl">{mode === "login" ? "Sign in" : mode === "register" ? "Create account" : mode === "forgot" ? "Send reset link" : "Update password"}</Button>
+        <Button type="submit" disabled={submitting} className="mt-6 w-full rounded-xl">{submitting ? "Please wait…" : mode === "login" ? "Sign in" : mode === "register" ? "Create account" : mode === "forgot" ? "Send reset link" : "Update password"}</Button>
       </form>
     )}
     <div className="mt-5 flex flex-wrap justify-between gap-3 text-sm">{mode === "login" ? <><Link to="/forgot-password" className="text-brand hover:underline">Forgot password?</Link><Link to="/register" className="text-brand hover:underline">Create an account</Link></> : null}{mode === "register" ? <Link to="/login" className="text-brand hover:underline">Already have an account? Sign in</Link> : null}{mode === "forgot" ? <Link to="/login" className="text-brand hover:underline">Back to sign in</Link> : null}</div>
