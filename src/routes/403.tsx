@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessDeniedPage } from "@/components/saarthi-pages";
+import { AccessDenied } from "@/components/access-denied";
 
 export const Route = createFileRoute("/403")({
   head: () => ({
@@ -11,5 +11,5 @@ export const Route = createFileRoute("/403")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: AccessDeniedPage,
+  component: () => <AccessDenied />,
 });
