@@ -46,6 +46,7 @@ export async function registerPatient(input: {
     email: input.email.trim(),
     password: input.password,
     options: {
+      ...(typeof window !== "undefined" ? { emailRedirectTo: `${window.location.origin}/login` } : {}),
       // Read by the public.handle_new_user() database trigger to seed
       // profiles.full_name. The client never writes user_roles itself —
       // the trigger grants exactly one role: 'patient' (§3, §49).
@@ -79,8 +80,8 @@ export async function signIn(input: { email: string; password: string }): Promis
   return { ok: true, data: undefined };
 }
 
-export async function signOut(): Promise<AuthResult> {
-  const { error } = await supabase.auth.signOut();
+export async function signOut(scope: "local" | "global" = "local"): Promise<AuthResult> {
+  const { error } = await supabase.auth.signOut({ scope });
   if (error) {
     return { ok: false, message: toHumanMessage(error) };
   }
@@ -88,8 +89,8 @@ export async function signOut(): Promise<AuthResult> {
 }
 
 export async function sendPasswordResetEmail(email: string): Promise<AuthResult> {
-  const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/reset-password` : undefined;
-  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo });
+  const options = typeof window !== "undefined" ? { redirectTo: `${window.location.origin}/reset-password` } : {};
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), options);
   if (error) {
     return { ok: false, message: toHumanMessage(error) };
   }
