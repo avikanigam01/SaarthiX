@@ -19,7 +19,6 @@ grant execute on all functions in schema public to authenticated;
 alter default privileges in schema public grant select, insert, update, delete on tables to authenticated;
 alter default privileges in schema public grant usage, select on sequences to authenticated;
 alter default privileges in schema public grant execute on functions to authenticated;
-
 -- Refresh PostgREST's schema cache so the new grants take effect immediately
 -- instead of waiting for the next automatic reload.
 notify pgrst, 'reload schema';
