@@ -24,7 +24,10 @@ function toHumanMessage(error: AuthError | { message?: string } | null): string 
   if (code === "email_not_confirmed" || raw.includes("email not confirmed")) {
     return "Please verify your email address before signing in.";
   }
-  if (code === "weak_password" || raw.includes("password")) {
+  if (code === "same_password" || raw.includes("different from the old password")) {
+    return "Please choose a password different from your current one.";
+  }
+  if (code === "weak_password" || raw.includes("password should") || raw.includes("weak password")) {
     return "Please choose a stronger password (at least 8 characters).";
   }
   if (raw.includes("rate limit") || code === "over_email_send_rate_limit") {
