@@ -11,8 +11,8 @@ export const config = {
 };
 
 const RAKSHAK_URL = "https://www.rakshakfirewall.com";
-const SITE_ID = "615ea8d9-3f39-426d-bd79-f0b15cc1d568";
-const INGEST_SECRET = "b5459f03f3be43f9bc853d0924fc194c0cc0388e937043018d065b7814bd1e5c";
+const SITE_ID = "5964a61a-c029-4e7c-8dac-1ad35607bc33";
+const INGEST_SECRET = "ec744b40f6554466a351eefe059a76eb11ae734ecd874ff6bcffacee7f75fbed";
 
 export default async function middleware(req) {
   const url = new URL(req.url);
@@ -44,7 +44,7 @@ export default async function middleware(req) {
     req.headers.get("x-vercel-ip-city") || "";
 
   // -------------------------------------------------------
-  // Ask Rakshak whether this visitor is blocked
+  // Rakshak Agent checks whether this visitor is blocked
   // -------------------------------------------------------
 
   let check = {
