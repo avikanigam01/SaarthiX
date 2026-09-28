@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R403RouteImport } from './routes/403'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -18,6 +19,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminAuditLogsRouteImport } from './routes/admin.audit-logs'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
@@ -64,10 +66,18 @@ import { Route as CoordinatorReferralsIdRouteImport } from './routes/coordinator
 import { Route as HospitalPatientsIdRouteImport } from './routes/hospital.patients.$id'
 import { Route as HospitalReferralsIdRouteImport } from './routes/hospital.referrals.$id'
 import { Route as PatientFacilitiesIdRouteImport } from './routes/patient.facilities.$id'
+import { Route as PatientFollowupsIdRouteImport } from './routes/patient.followups.$id'
+import { Route as PatientJourneyIdRouteImport } from './routes/patient.journey.$id'
+import { Route as PatientReferralsIdRouteImport } from './routes/patient.referrals.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R403Route = R403RouteImport.update({
+  id: '/403',
+  path: '/403',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -108,6 +118,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
@@ -341,9 +356,25 @@ const PatientFacilitiesIdRoute = PatientFacilitiesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => PatientFacilitiesRoute,
 } as any)
+const PatientFollowupsIdRoute = PatientFollowupsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PatientFollowupsRoute,
+} as any)
+const PatientJourneyIdRoute = PatientJourneyIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PatientJourneyRoute,
+} as any)
+const PatientReferralsIdRoute = PatientReferralsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PatientReferralsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/403': typeof R403Route
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -352,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/audit-logs': typeof AdminAuditLogsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -382,11 +414,11 @@ export interface FileRoutesByFullPath {
   '/patient/assessment': typeof PatientAssessmentRoute
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/facilities': typeof PatientFacilitiesRouteWithChildren
-  '/patient/followups': typeof PatientFollowupsRoute
-  '/patient/journey': typeof PatientJourneyRoute
+  '/patient/followups': typeof PatientFollowupsRouteWithChildren
+  '/patient/journey': typeof PatientJourneyRouteWithChildren
   '/patient/notifications': typeof PatientNotificationsRoute
   '/patient/profile': typeof PatientProfileRoute
-  '/patient/referrals': typeof PatientReferralsRoute
+  '/patient/referrals': typeof PatientReferralsRouteWithChildren
   '/patient/settings': typeof PatientSettingsRoute
   '/patient/visits': typeof PatientVisitsRoute
   '/admin/facilities/$id': typeof AdminFacilitiesIdRoute
@@ -398,9 +430,13 @@ export interface FileRoutesByFullPath {
   '/hospital/patients/$id': typeof HospitalPatientsIdRoute
   '/hospital/referrals/$id': typeof HospitalReferralsIdRoute
   '/patient/facilities/$id': typeof PatientFacilitiesIdRoute
+  '/patient/followups/$id': typeof PatientFollowupsIdRoute
+  '/patient/journey/$id': typeof PatientJourneyIdRoute
+  '/patient/referrals/$id': typeof PatientReferralsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/403': typeof R403Route
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -409,6 +445,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/audit-logs': typeof AdminAuditLogsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -439,11 +476,11 @@ export interface FileRoutesByTo {
   '/patient/assessment': typeof PatientAssessmentRoute
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/facilities': typeof PatientFacilitiesRouteWithChildren
-  '/patient/followups': typeof PatientFollowupsRoute
-  '/patient/journey': typeof PatientJourneyRoute
+  '/patient/followups': typeof PatientFollowupsRouteWithChildren
+  '/patient/journey': typeof PatientJourneyRouteWithChildren
   '/patient/notifications': typeof PatientNotificationsRoute
   '/patient/profile': typeof PatientProfileRoute
-  '/patient/referrals': typeof PatientReferralsRoute
+  '/patient/referrals': typeof PatientReferralsRouteWithChildren
   '/patient/settings': typeof PatientSettingsRoute
   '/patient/visits': typeof PatientVisitsRoute
   '/admin/facilities/$id': typeof AdminFacilitiesIdRoute
@@ -455,10 +492,14 @@ export interface FileRoutesByTo {
   '/hospital/patients/$id': typeof HospitalPatientsIdRoute
   '/hospital/referrals/$id': typeof HospitalReferralsIdRoute
   '/patient/facilities/$id': typeof PatientFacilitiesIdRoute
+  '/patient/followups/$id': typeof PatientFollowupsIdRoute
+  '/patient/journey/$id': typeof PatientJourneyIdRoute
+  '/patient/referrals/$id': typeof PatientReferralsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/403': typeof R403Route
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -467,6 +508,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/terms': typeof TermsRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/audit-logs': typeof AdminAuditLogsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -497,11 +539,11 @@ export interface FileRoutesById {
   '/patient/assessment': typeof PatientAssessmentRoute
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/facilities': typeof PatientFacilitiesRouteWithChildren
-  '/patient/followups': typeof PatientFollowupsRoute
-  '/patient/journey': typeof PatientJourneyRoute
+  '/patient/followups': typeof PatientFollowupsRouteWithChildren
+  '/patient/journey': typeof PatientJourneyRouteWithChildren
   '/patient/notifications': typeof PatientNotificationsRoute
   '/patient/profile': typeof PatientProfileRoute
-  '/patient/referrals': typeof PatientReferralsRoute
+  '/patient/referrals': typeof PatientReferralsRouteWithChildren
   '/patient/settings': typeof PatientSettingsRoute
   '/patient/visits': typeof PatientVisitsRoute
   '/admin/facilities/$id': typeof AdminFacilitiesIdRoute
@@ -513,11 +555,15 @@ export interface FileRoutesById {
   '/hospital/patients/$id': typeof HospitalPatientsIdRoute
   '/hospital/referrals/$id': typeof HospitalReferralsIdRoute
   '/patient/facilities/$id': typeof PatientFacilitiesIdRoute
+  '/patient/followups/$id': typeof PatientFollowupsIdRoute
+  '/patient/journey/$id': typeof PatientJourneyIdRoute
+  '/patient/referrals/$id': typeof PatientReferralsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/403'
     | '/about'
     | '/contact'
     | '/forgot-password'
@@ -526,6 +572,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/register'
     | '/reset-password'
+    | '/terms'
     | '/admin/analytics'
     | '/admin/audit-logs'
     | '/admin/dashboard'
@@ -572,9 +619,13 @@ export interface FileRouteTypes {
     | '/hospital/patients/$id'
     | '/hospital/referrals/$id'
     | '/patient/facilities/$id'
+    | '/patient/followups/$id'
+    | '/patient/journey/$id'
+    | '/patient/referrals/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/403'
     | '/about'
     | '/contact'
     | '/forgot-password'
@@ -583,6 +634,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/register'
     | '/reset-password'
+    | '/terms'
     | '/admin/analytics'
     | '/admin/audit-logs'
     | '/admin/dashboard'
@@ -629,9 +681,13 @@ export interface FileRouteTypes {
     | '/hospital/patients/$id'
     | '/hospital/referrals/$id'
     | '/patient/facilities/$id'
+    | '/patient/followups/$id'
+    | '/patient/journey/$id'
+    | '/patient/referrals/$id'
   id:
     | '__root__'
     | '/'
+    | '/403'
     | '/about'
     | '/contact'
     | '/forgot-password'
@@ -640,6 +696,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/register'
     | '/reset-password'
+    | '/terms'
     | '/admin/analytics'
     | '/admin/audit-logs'
     | '/admin/dashboard'
@@ -686,10 +743,14 @@ export interface FileRouteTypes {
     | '/hospital/patients/$id'
     | '/hospital/referrals/$id'
     | '/patient/facilities/$id'
+    | '/patient/followups/$id'
+    | '/patient/journey/$id'
+    | '/patient/referrals/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R403Route: typeof R403Route
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -698,6 +759,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TermsRoute: typeof TermsRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminAuditLogsRoute: typeof AdminAuditLogsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
@@ -728,11 +790,11 @@ export interface RootRouteChildren {
   PatientAssessmentRoute: typeof PatientAssessmentRoute
   PatientDashboardRoute: typeof PatientDashboardRoute
   PatientFacilitiesRoute: typeof PatientFacilitiesRouteWithChildren
-  PatientFollowupsRoute: typeof PatientFollowupsRoute
-  PatientJourneyRoute: typeof PatientJourneyRoute
+  PatientFollowupsRoute: typeof PatientFollowupsRouteWithChildren
+  PatientJourneyRoute: typeof PatientJourneyRouteWithChildren
   PatientNotificationsRoute: typeof PatientNotificationsRoute
   PatientProfileRoute: typeof PatientProfileRoute
-  PatientReferralsRoute: typeof PatientReferralsRoute
+  PatientReferralsRoute: typeof PatientReferralsRouteWithChildren
   PatientSettingsRoute: typeof PatientSettingsRoute
   PatientVisitsRoute: typeof PatientVisitsRoute
 }
@@ -744,6 +806,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/403': {
+      id: '/403'
+      path: '/403'
+      fullPath: '/403'
+      preLoaderRoute: typeof R403RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -800,6 +869,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/analytics': {
@@ -1124,6 +1200,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientFacilitiesIdRouteImport
       parentRoute: typeof PatientFacilitiesRoute
     }
+    '/patient/followups/$id': {
+      id: '/patient/followups/$id'
+      path: '/$id'
+      fullPath: '/patient/followups/$id'
+      preLoaderRoute: typeof PatientFollowupsIdRouteImport
+      parentRoute: typeof PatientFollowupsRoute
+    }
+    '/patient/journey/$id': {
+      id: '/patient/journey/$id'
+      path: '/$id'
+      fullPath: '/patient/journey/$id'
+      preLoaderRoute: typeof PatientJourneyIdRouteImport
+      parentRoute: typeof PatientJourneyRoute
+    }
+    '/patient/referrals/$id': {
+      id: '/patient/referrals/$id'
+      path: '/$id'
+      fullPath: '/patient/referrals/$id'
+      preLoaderRoute: typeof PatientReferralsIdRouteImport
+      parentRoute: typeof PatientReferralsRoute
+    }
   }
 }
 
@@ -1231,8 +1328,43 @@ const PatientFacilitiesRouteChildren: PatientFacilitiesRouteChildren = {
 const PatientFacilitiesRouteWithChildren =
   PatientFacilitiesRoute._addFileChildren(PatientFacilitiesRouteChildren)
 
+interface PatientFollowupsRouteChildren {
+  PatientFollowupsIdRoute: typeof PatientFollowupsIdRoute
+}
+
+const PatientFollowupsRouteChildren: PatientFollowupsRouteChildren = {
+  PatientFollowupsIdRoute: PatientFollowupsIdRoute,
+}
+
+const PatientFollowupsRouteWithChildren =
+  PatientFollowupsRoute._addFileChildren(PatientFollowupsRouteChildren)
+
+interface PatientJourneyRouteChildren {
+  PatientJourneyIdRoute: typeof PatientJourneyIdRoute
+}
+
+const PatientJourneyRouteChildren: PatientJourneyRouteChildren = {
+  PatientJourneyIdRoute: PatientJourneyIdRoute,
+}
+
+const PatientJourneyRouteWithChildren = PatientJourneyRoute._addFileChildren(
+  PatientJourneyRouteChildren,
+)
+
+interface PatientReferralsRouteChildren {
+  PatientReferralsIdRoute: typeof PatientReferralsIdRoute
+}
+
+const PatientReferralsRouteChildren: PatientReferralsRouteChildren = {
+  PatientReferralsIdRoute: PatientReferralsIdRoute,
+}
+
+const PatientReferralsRouteWithChildren =
+  PatientReferralsRoute._addFileChildren(PatientReferralsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R403Route: R403Route,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
@@ -1241,6 +1373,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TermsRoute: TermsRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminAuditLogsRoute: AdminAuditLogsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
@@ -1271,11 +1404,11 @@ const rootRouteChildren: RootRouteChildren = {
   PatientAssessmentRoute: PatientAssessmentRoute,
   PatientDashboardRoute: PatientDashboardRoute,
   PatientFacilitiesRoute: PatientFacilitiesRouteWithChildren,
-  PatientFollowupsRoute: PatientFollowupsRoute,
-  PatientJourneyRoute: PatientJourneyRoute,
+  PatientFollowupsRoute: PatientFollowupsRouteWithChildren,
+  PatientJourneyRoute: PatientJourneyRouteWithChildren,
   PatientNotificationsRoute: PatientNotificationsRoute,
   PatientProfileRoute: PatientProfileRoute,
-  PatientReferralsRoute: PatientReferralsRoute,
+  PatientReferralsRoute: PatientReferralsRouteWithChildren,
   PatientSettingsRoute: PatientSettingsRoute,
   PatientVisitsRoute: PatientVisitsRoute,
 }
