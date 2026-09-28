@@ -1302,7 +1302,7 @@ Authorized staff can:
 
 Route:
 
-/hospital/followups
+/hospital/followups 
 
 Authorized staff can:
 
@@ -1724,5 +1724,6 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-#   S a a r t h i X  
+#   S a a r t h i X 
+ 
  
