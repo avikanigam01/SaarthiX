@@ -16,6 +16,15 @@ type HospitalContextValue = {
 
 const HospitalContext = createContext<HospitalContextValue | null>(null);
 const STORAGE_KEY = "saarthix.activeFacility";
+const NO_FACILITIES: Facility[] = [];
+
+function GateFrame({ children }: { children: ReactNode }) {
+  return (
+    <div className="grid min-h-screen place-items-center bg-prism-surface px-4">
+      <div className="w-full max-w-lg">{children}</div>
+    </div>
+  );
+}
 
 /**
  * Hospital users may be linked to several facilities. Everything in the hospital workspace is scoped
@@ -36,7 +45,7 @@ export function HospitalGate({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const facilities = query.data ?? [];
+  const facilities = query.data ?? NO_FACILITIES;
   const facility = facilities.find((f) => f.id === selectedId) ?? facilities[0] ?? null;
 
   const value = useMemo<HospitalContextValue | null>(
@@ -58,19 +67,16 @@ export function HospitalGate({ children }: { children: ReactNode }) {
     [facilities, facility],
   );
 
-  const Frame = ({ children: inner }: { children: ReactNode }) => (
-    <div className="grid min-h-screen place-items-center bg-prism-surface px-4"><div className="w-full max-w-lg">{inner}</div></div>
-  );
-  if (query.isLoading) return <Frame><LoadingState label="Loading your facility..." /></Frame>;
-  if (query.isError) return <Frame><ErrorState onRetry={() => void query.refetch()} /></Frame>;
+  if (query.isLoading) return <GateFrame><LoadingState label="Loading your facility..." /></GateFrame>;
+  if (query.isError) return <GateFrame><ErrorState onRetry={() => void query.refetch()} /></GateFrame>;
   if (!value) {
     return (
-      <Frame><EmptyState
+      <GateFrame><EmptyState
         action={<Button variant="outline" onClick={() => void signOut()}>Sign out</Button>}
         icon={Building2}
         title="Your account isn't linked to a facility yet."
         description="A platform administrator must associate your account with a verified facility before you can manage it. Please contact your administrator."
-      /></Frame>
+      /></GateFrame>
     );
   }
   return <HospitalContext.Provider value={value}>{children}</HospitalContext.Provider>;
