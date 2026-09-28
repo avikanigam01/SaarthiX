@@ -1,3 +1,4 @@
+import { Outlet, useChildMatches } from "@tanstack/react-router";
 import { Suspense, type ReactNode } from "react";
 
 import { PortalShell, type PortalKind } from "@/components/portal-shell";
@@ -60,7 +61,15 @@ function render(kind: PortalKind, key: string): () => ReactNode {
 }
 
 export function portalComponent(kind: PortalKind, page: string, detail = false): () => ReactNode {
-  return render(kind, `${kind}/${page}${detail ? "/$id" : ""}`);
+  const Page = render(kind, `${kind}/${page}${detail ? "/$id" : ""}`);
+  if (detail) return Page;
+  // List routes (e.g. /admin/users) are parents of their detail routes (/admin/users/$id).
+  // When a child route is active, render it via <Outlet /> instead of the list; otherwise
+  // the URL changes but the list stays on screen and "Manage" appears to do nothing.
+  return function ListRoute() {
+    const hasChild = useChildMatches({ select: (matches) => matches.length > 0 });
+    return hasChild ? <Outlet /> : <Page />;
+  };
 }
 
 export function detailComponent(kind: PortalKind, section: string): () => ReactNode {
