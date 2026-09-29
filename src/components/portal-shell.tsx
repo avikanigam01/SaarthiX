@@ -6,6 +6,8 @@ import {
 import { useEffect, useState, type ReactNode } from "react";
 
 import { AccessDenied } from "@/components/access-denied";
+import { PageTransition } from "@/components/motion/primitives";
+import { ThemeToggle } from "@/components/motion/theme-toggle";
 import { ErrorState, LoadingState, SaarthiLogo } from "@/components/saarthi-ui";
 import { Button } from "@/components/ui/button";
 import { useRealtimeInvalidate } from "@/hooks/use-realtime";
@@ -128,17 +130,18 @@ function Shell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
         <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen((value) => !value)} aria-label={open ? "Close navigation" : "Open navigation"} aria-expanded={open}>{open ? <X /> : <Menu />}</Button>
-            <Link to={config.home} aria-label="Go to workspace home"><SaarthiLogo /></Link>
+            <Link to={config.home} aria-label="Go to workspace home" className="transition-transform hover:scale-[1.03]"><SaarthiLogo /></Link>
           </div>
           <div className="hidden min-w-0 items-center gap-3 text-sm text-muted-foreground md:flex">
             {kind === "hospital" ? <FacilitySwitcher /> : <span>{config.label}</span>}
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
+            <ThemeToggle />
             {kind !== "admin" ? (
               <Button asChild variant="ghost" size="icon" className="relative" aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}>
                 <Link to={config.notifications}>
                   <Bell />
-                  {unreadCount > 0 ? <span className="absolute right-1 top-1 grid min-w-4 place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-4 text-white">{unreadCount > 9 ? "9+" : unreadCount}</span> : null}
+                  {unreadCount > 0 ? <span className="absolute right-1 top-1 grid min-w-4 animate-pulse-dot place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-4 text-white">{unreadCount > 9 ? "9+" : unreadCount}</span> : null}
                 </Link>
               </Button>
             ) : null}
@@ -157,8 +160,8 @@ function Shell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
             {config.items.map(([label, to, Icon]) => {
               const active = pathname === to || pathname.startsWith(`${to}/`);
               return (
-                <Link key={to} to={to} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${active ? "bg-brand-soft text-brand" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}>
-                  <Icon className="size-4" aria-hidden="true" /><span>{label}</span>{pathname === to ? <ChevronRight className="ml-auto size-4" aria-hidden="true" /> : null}
+                <Link key={to} to={to} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={`group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active ? "bg-brand-soft text-brand shadow-sm" : "text-muted-foreground hover:translate-x-0.5 hover:bg-muted hover:text-foreground"}`}>
+                  <Icon className="size-4 transition-transform group-hover:scale-110" aria-hidden="true" /><span>{label}</span>{pathname === to ? <ChevronRight className="ml-auto size-4" aria-hidden="true" /> : null}
                 </Link>
               );
             })}
@@ -166,7 +169,7 @@ function Shell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
           <div className="mt-6 rounded-2xl border border-border bg-card/70 p-4"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">SaarthiX safety</p><p className="mt-2 text-xs leading-relaxed text-muted-foreground">Decision-support and care coordination, not diagnosis or autonomous treatment.</p></div>
         </aside>
         {open ? <button className="fixed inset-x-0 bottom-0 top-16 z-20 bg-foreground/30 lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation overlay" /> : null}
-        <main id="main-content" className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</main>
+        <main id="main-content" className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10"><PageTransition routeKey={pathname}>{children}</PageTransition></main>
       </div>
     </div>
   );
