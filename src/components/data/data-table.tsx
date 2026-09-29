@@ -38,8 +38,8 @@ export function DataTable<T>({
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {rows.map((row) => (
-              <tr key={rowKey(row)} className="align-middle hover:bg-muted/30">
+            {rows.map((row, i) => (
+              <tr key={rowKey(row)} className="animate-row-in align-middle transition-colors hover:bg-brand-soft/40" style={{ animationDelay: `${Math.min(i, 10) * 35}ms` }}>
                 {columns.map((c) => (
                   <td key={c.key} className={cn("px-4 py-3", c.className)}>{c.cell(row)}</td>
                 ))}
@@ -49,8 +49,8 @@ export function DataTable<T>({
         </table>
       </div>
       <ul className="divide-y divide-border md:hidden" aria-label={caption}>
-        {rows.map((row) => (
-          <li key={rowKey(row)} className="space-y-3 p-4">
+        {rows.map((row, i) => (
+          <li key={rowKey(row)} className="animate-row-in space-y-3 p-4" style={{ animationDelay: `${Math.min(i, 10) * 35}ms` }}>
             {primary ? <div className="text-base font-semibold text-foreground">{primary.cell(row)}</div> : null}
             <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
               {columns.filter((c) => c !== primary).map((c) => (
