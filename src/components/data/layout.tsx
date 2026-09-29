@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { CountUp, Reveal } from "@/components/motion/primitives";
 import { ErrorState } from "@/components/saarthi-ui";
 import { cn } from "@/lib/utils";
 
@@ -8,14 +9,14 @@ export function PageHeader({
   title, description, actions, eyebrow,
 }: { title: string; description?: string | undefined; actions?: ReactNode; eyebrow?: string | undefined }) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+    <Reveal y={14} className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-2xl">
         {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">{eyebrow}</p> : null}
         <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{title}</h1>
         {description ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">{description}</p> : null}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
-    </div>
+    </Reveal>
   );
 }
 
@@ -23,7 +24,7 @@ export function Panel({
   title, description, actions, children, className,
 }: { title?: string | undefined; description?: string | undefined; actions?: ReactNode; children: ReactNode; className?: string | undefined }) {
   return (
-    <section className={cn("rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6", className)}>
+    <Reveal as="section" y={18} className={cn("rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6", className)}>
       {title || actions ? (
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -34,7 +35,7 @@ export function Panel({
         </div>
       ) : null}
       {children}
-    </section>
+    </Reveal>
   );
 }
 
@@ -57,20 +58,26 @@ export function StatCard({
     success: "text-success-foreground",
   } as const;
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <Reveal y={16} className="group rounded-2xl border border-border bg-card p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-brand">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
-        {Icon ? <Icon className="size-4 text-muted-foreground" aria-hidden="true" /> : null}
+        {Icon ? (
+          <span className="grid size-8 place-items-center rounded-lg bg-brand-soft text-brand transition-transform duration-300 group-hover:scale-110">
+            <Icon className="size-4" aria-hidden="true" />
+          </span>
+        ) : null}
       </div>
       {loading ? (
-        <div className="mt-3 h-8 w-16 animate-pulse rounded-md bg-muted" role="status" aria-label={`Loading ${label}`} />
+        <div className="mt-3 h-8 w-16 skeleton-shimmer rounded-md" role="status" aria-label={`Loading ${label}`} />
       ) : error ? (
         <p className="mt-3 text-sm text-danger">Unavailable</p>
       ) : (
-        <p className={cn("mt-2 font-display text-3xl font-bold tracking-tight", tones[tone])}>{value}</p>
+        <p className={cn("mt-2 font-display text-3xl font-bold tracking-tight", tones[tone])}>
+          {typeof value === "number" ? <CountUp value={value} /> : value}
+        </p>
       )}
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
-    </div>
+    </Reveal>
   );
 }
 
