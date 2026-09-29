@@ -12,7 +12,7 @@ export function AccessDenied({ inline = false }: { inline?: boolean }) {
   const home = status === "signed_in" ? homePathForRoles(roles) : "/login";
   return (
     <div className={inline ? "grid min-h-[70vh] place-items-center px-4" : "grid min-h-screen place-items-center bg-prism-page px-4"}>
-      <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 text-center shadow-sm">
+      <div className="w-full max-w-md animate-float rounded-3xl border border-border bg-card p-8 text-center shadow-card">
         {!inline ? <div className="mb-6 flex justify-center"><SaarthiLogo /></div> : null}
         <span className="mx-auto grid size-12 place-items-center rounded-full bg-danger-soft text-danger">
           <ShieldAlert className="size-6" aria-hidden="true" />
