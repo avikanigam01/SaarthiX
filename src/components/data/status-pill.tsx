@@ -48,7 +48,7 @@ export function StatusPill({ status, label, className }: { status: string; label
   const tone = STATUS_TONE[status] ?? "neutral";
   return (
     <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold", TONES[tone], className)}>
-      <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
+      <span className={cn("size-1.5 rounded-full bg-current", (status === "pending" || status === "urgent" || status === "in_progress") && "animate-pulse-dot")} aria-hidden="true" />
       {label ?? labelize(status)}
     </span>
   );
