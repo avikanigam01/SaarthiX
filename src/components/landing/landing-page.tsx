@@ -1,19 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import {
-  ArrowRight, BellOff, Building2, ClipboardCheck, Clock3, FileText, HeartPulse, Lock, Menu, Repeat, ScrollText,
-  Shuffle, ShieldAlert, ShieldCheck, Route as RouteIcon, Ban, Stethoscope, Hospital, CalendarDays, UsersRound, X, Activity, Radar,
+  ArrowRight, BellOff, Building2, ClipboardCheck, Clock3, FileText, HeartPulse, Lock, Repeat, ScrollText,
+  Shuffle, ShieldAlert, ShieldCheck, Route as RouteIcon, Ban, Stethoscope, Hospital, CalendarDays, UsersRound, Activity, Radar,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { CapabilityVisual, type CapabilityVisualKey } from "@/components/landing/capability-visuals";
 import { HeroScene } from "@/components/landing/hero-scene";
+import { NeonShell } from "@/components/landing/shell";
 import { Backdrop, NeonChip, NeonList, NeonTile, Panel, SectionHead, toneClass, type Tone } from "@/components/landing/neon-ui";
 import { StepVisual, type StepVisualKey } from "@/components/landing/step-visuals";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/primitives";
-import { SaarthiLogo } from "@/components/saarthi-ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useAuth } from "@/lib/auth-context";
-import { homePathForRoles } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ content */
@@ -84,85 +82,6 @@ const faqs = [
 ] as const;
 
 const marquee = ["Tell us what you need", "Understand urgency", "Find appropriate care", "Confirm availability", "Receive care", "Complete follow-up"] as const;
-
-const navAnchors = [["#how-it-works", "How it works"], ["#capabilities", "Capabilities"], ["#institutions", "For you"], ["#faq", "FAQ"]] as const;
-
-/* ------------------------------------------------------------------ shell */
-
-function NeonHeader() {
-  const { status, roles: userRoles } = useAuth();
-  const signedIn = status === "signed_in";
-  const [open, setOpen] = useState(false);
-  const link = "rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-[var(--nl-cyan)]";
-  return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[oklch(0.135_0.045_265/0.75)] backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link to="/" aria-label="SaarthiX home" className="transition-transform hover:scale-[1.03]"><SaarthiLogo /></Link>
-        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-          {navAnchors.map(([href, label]) => <a key={href} href={href} className={link}>{label}</a>)}
-          <Link to="/privacy" className={link}>Safety & privacy</Link>
-          <Link to="/contact" className={link}>Contact</Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-2 sm:flex">
-            {signedIn ? (
-              <Link to={homePathForRoles(userRoles) as "/"} className="nl-btn inline-flex h-9 items-center rounded-full px-5 text-sm">My workspace</Link>
-            ) : (
-              <>
-                <Link to="/login" className="nl-btn-ghost inline-flex h-9 items-center rounded-full px-4 text-sm font-semibold">Sign in</Link>
-                <Link to="/register" className="nl-btn inline-flex h-9 items-center rounded-full px-5 text-sm">Register</Link>
-              </>
-            )}
-          </div>
-          <button type="button" className="grid size-9 place-items-center rounded-full text-foreground hover:bg-white/10 md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open}>
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
-        </div>
-      </div>
-      <div className={cn("overflow-hidden border-white/10 transition-[max-height] duration-300 ease-out md:hidden", open ? "max-h-96 border-t" : "max-h-0")}>
-        <nav className="flex flex-col gap-1 px-5 py-3" aria-label="Mobile">
-          {navAnchors.map(([href, label]) => <a key={href} href={href} onClick={() => setOpen(false)} className={cn(link, "py-2.5")}>{label}</a>)}
-          <Link to="/privacy" onClick={() => setOpen(false)} className={cn(link, "py-2.5")}>Safety & privacy</Link>
-          <Link to="/contact" onClick={() => setOpen(false)} className={cn(link, "py-2.5")}>Contact</Link>
-          <div className="mt-2 flex gap-2">
-            {signedIn ? <Link to={homePathForRoles(userRoles) as "/"} className="nl-btn inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm">My workspace</Link> : (
-              <>
-                <Link to="/login" className="nl-btn-ghost inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm font-semibold">Sign in</Link>
-                <Link to="/register" className="nl-btn inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm">Register</Link>
-              </>
-            )}
-          </div>
-        </nav>
-      </div>
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--nl-cyan)] to-transparent opacity-60" />
-    </header>
-  );
-}
-
-function NeonFooter() {
-  return (
-    <footer className="border-t border-white/10 bg-black/20">
-      <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-[1.3fr_1fr_1fr]">
-        <div>
-          <SaarthiLogo />
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">Right Care. Right Place. Right Time. A healthcare access and referral-coordination platform.</p>
-        </div>
-        <nav aria-label="Explore" className="flex flex-col gap-2 text-sm text-muted-foreground">
-          <span className="font-display text-sm font-semibold text-foreground">Explore</span>
-          <Link to="/how-it-works" className="hover:text-[var(--nl-cyan)]">How it works</Link>
-          <Link to="/about" className="hover:text-[var(--nl-cyan)]">About</Link>
-          <Link to="/contact" className="hover:text-[var(--nl-cyan)]">Contact</Link>
-        </nav>
-        <nav aria-label="Legal" className="flex flex-col gap-2 text-sm text-muted-foreground">
-          <span className="font-display text-sm font-semibold text-foreground">Trust</span>
-          <Link to="/privacy" className="hover:text-[var(--nl-cyan)]">Safety & privacy</Link>
-          <Link to="/terms" className="hover:text-[var(--nl-cyan)]">Terms</Link>
-          <span>Decision-support, not diagnosis.</span>
-        </nav>
-      </div>
-    </footer>
-  );
-}
 
 /* ---------------------------------------------------------------- sections */
 
@@ -236,12 +155,12 @@ function Problems() {
   );
 }
 
-function HowItWorks() {
+export function HowItWorks({ showHead = true }: { showHead?: boolean }) {
   return (
-    <section id="how-it-works" className="relative scroll-mt-20 border-y border-white/10 bg-black/20 py-20 lg:py-28" aria-labelledby="how-title">
+    <section id="how-it-works" className="relative scroll-mt-20 border-y border-white/10 bg-black/20 py-20 lg:py-28" aria-labelledby={showHead ? "how-title" : undefined} aria-label={showHead ? undefined : "How SaarthiX works"}>
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <Reveal on="scroll"><SectionHead id="how-title" badge="How SaarthiX works" icon={RouteIcon} title="From a first question to a completed journey" description="Six guided steps. Each one is checked against real records, and you can see where you are at every point." /></Reveal>
-        <ol className="relative mt-16 space-y-16 lg:space-y-24">
+        {showHead ? <Reveal on="scroll"><SectionHead id="how-title" badge="How SaarthiX works" icon={RouteIcon} title="From a first question to a completed journey" description="Six guided steps. Each one is checked against real records, and you can see where you are at every point." /></Reveal> : null}
+        <ol className={cn("relative space-y-16 lg:space-y-24", showHead ? "mt-16" : "mt-0")}>
           <span className="absolute bottom-6 left-[1.35rem] top-6 w-px bg-gradient-to-b from-[var(--nl-cyan)] via-[var(--nl-violet)] to-[var(--nl-rose)] opacity-40 lg:left-[1.6rem]" aria-hidden="true" />
           {steps.map((s) => (
             <li key={s.n} className={cn("relative grid items-center gap-7 pl-16 lg:grid-cols-2 lg:gap-14 lg:pl-24", toneClass[s.tone])}>
@@ -262,7 +181,7 @@ function HowItWorks() {
   );
 }
 
-function Capabilities() {
+export function Capabilities() {
   return (
     <section id="capabilities" className="mx-auto max-w-7xl scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" aria-labelledby="cap-title">
       <Reveal on="scroll"><SectionHead id="cap-title" badge="Core capabilities" icon={Activity} tone="violet" title="Coordination tools built for patients and the institutions that serve them" description="Four capabilities that work together, each one explained and shown below." /></Reveal>
@@ -283,7 +202,7 @@ function Capabilities() {
   );
 }
 
-function Roles() {
+export function Roles() {
   return (
     <section className="border-y border-white/10 bg-black/20 py-20 lg:py-24" aria-labelledby="roles-title">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -327,7 +246,7 @@ function Audiences() {
   );
 }
 
-function Trust() {
+export function Trust() {
   return (
     <section className="relative overflow-hidden border-y border-white/10 bg-black/20 py-20 lg:py-24" aria-labelledby="trust-title">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -348,7 +267,7 @@ function Trust() {
   );
 }
 
-function Faq() {
+export function Faq() {
   return (
     <section id="faq" className="mx-auto max-w-3xl scroll-mt-20 px-5 py-20 sm:px-8 lg:py-28" aria-labelledby="faq-title">
       <Reveal on="scroll"><SectionHead id="faq-title" badge="Questions" icon={ScrollText} tone="gold" title="Things people ask before they start" /></Reveal>
@@ -366,7 +285,7 @@ function Faq() {
   );
 }
 
-function ClosingCta() {
+export function ClosingCta() {
   return (
     <section className="px-5 pb-24 sm:px-8">
       <Reveal on="scroll">
@@ -388,9 +307,7 @@ function ClosingCta() {
 
 export function HomePage() {
   return (
-    <div className="dark nl-root min-h-screen text-foreground">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-[var(--nl-cyan)] focus:px-4 focus:py-2 focus:text-black">Skip to content</a>
-      <NeonHeader />
+    <NeonShell anchors>
       <main id="main">
         <Hero />
         <Ticker />
@@ -403,7 +320,6 @@ export function HomePage() {
         <Faq />
         <ClosingCta />
       </main>
-      <NeonFooter />
-    </div>
+    </NeonShell>
   );
 }
