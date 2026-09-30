@@ -290,3 +290,144 @@
   .hs-ambulance { transform: translateX(150px); }
   .hs-ecg { stroke-dashoffset: 0; }
 }
+
+/* ---- Neon landing page (scoped to .nl-root) ---- */
+@property --nl-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+.nl-root {
+  --nl-bg: oklch(0.135 0.045 265);
+  --nl-panel: oklch(0.18 0.055 265);
+  --nl-cyan: oklch(0.86 0.13 205);
+  --nl-mint: oklch(0.87 0.17 160);
+  --nl-violet: oklch(0.72 0.19 295);
+  --nl-gold: oklch(0.86 0.14 88);
+  --nl-rose: oklch(0.72 0.2 12);
+  --tone: var(--nl-cyan);
+  position: relative;
+  isolation: isolate;
+  background-color: var(--nl-bg);
+  background-image:
+    radial-gradient(1100px 600px at 85% -5%, color-mix(in oklab, var(--nl-violet) 22%, transparent), transparent 62%),
+    radial-gradient(900px 620px at 0% 0%, color-mix(in oklab, var(--nl-cyan) 18%, transparent), transparent 60%);
+}
+.nl-t-cyan { --tone: var(--nl-cyan); }
+.nl-t-mint { --tone: var(--nl-mint); }
+.nl-t-violet { --tone: var(--nl-violet); }
+.nl-t-gold { --tone: var(--nl-gold); }
+.nl-t-rose { --tone: var(--nl-rose); }
+
+.nl-tile {
+  color: var(--tone);
+  background: color-mix(in oklab, var(--tone) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--tone) 45%, transparent);
+  box-shadow: 0 0 22px -8px var(--tone), inset 0 0 14px -8px var(--tone);
+}
+.nl-chip {
+  color: var(--tone);
+  background: color-mix(in oklab, var(--tone) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--tone) 35%, transparent);
+}
+.nl-text-tone { color: var(--tone); text-shadow: 0 0 18px color-mix(in oklab, var(--tone) 55%, transparent); }
+.nl-bg-tone { background: var(--tone); box-shadow: 0 0 14px 1px color-mix(in oklab, var(--tone) 70%, transparent); }
+.nl-card {
+  position: relative;
+  border-radius: 1.5rem;
+  background: linear-gradient(160deg, color-mix(in oklab, var(--nl-panel) 90%, transparent), color-mix(in oklab, var(--nl-bg) 94%, transparent));
+  border: 1px solid color-mix(in oklab, var(--tone) 22%, transparent);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.nl-card-hover:hover {
+  border-color: color-mix(in oklab, var(--tone) 60%, transparent);
+  box-shadow: 0 0 44px -14px var(--tone), inset 0 0 34px -22px var(--tone);
+  transform: translateY(-4px);
+}
+.nl-edge { position: relative; }
+.nl-edge::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--nl-angle), transparent 0 50%, var(--nl-cyan), var(--nl-violet), var(--nl-mint), transparent 96%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: nl-spin 6s linear infinite;
+}
+.nl-grid {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--nl-cyan) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--nl-cyan) 10%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 15%, transparent 72%);
+  mask-image: radial-gradient(ellipse at 50% 35%, #000 15%, transparent 72%);
+  animation: nl-grid 18s linear infinite;
+}
+.nl-neon-text {
+  background-image: linear-gradient(100deg, var(--nl-cyan), var(--nl-violet), var(--nl-mint), var(--nl-cyan));
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 16px color-mix(in oklab, var(--nl-cyan) 40%, transparent));
+  animation: nl-shift 9s linear infinite;
+}
+.nl-btn {
+  color: oklch(0.16 0.05 265); font-weight: 700; border: 0;
+  background-image: linear-gradient(100deg, var(--nl-cyan), var(--nl-mint));
+  box-shadow: 0 0 26px -4px color-mix(in oklab, var(--nl-cyan) 80%, transparent);
+  transition: box-shadow 0.3s, transform 0.3s, filter 0.3s;
+}
+.nl-btn:hover { box-shadow: 0 0 44px -2px color-mix(in oklab, var(--nl-cyan) 95%, transparent); transform: translateY(-2px); filter: brightness(1.06); }
+.nl-btn-ghost {
+  color: var(--nl-cyan); background: color-mix(in oklab, var(--nl-cyan) 6%, transparent);
+  border: 1px solid color-mix(in oklab, var(--nl-cyan) 50%, transparent);
+  transition: box-shadow 0.3s, background 0.3s, transform 0.3s;
+}
+.nl-btn-ghost:hover { background: color-mix(in oklab, var(--nl-cyan) 14%, transparent); box-shadow: 0 0 30px -6px var(--nl-cyan); transform: translateY(-2px); color: var(--nl-cyan); }
+
+.nl-type { display: inline-block; overflow: hidden; white-space: nowrap; vertical-align: bottom; width: 0; border-right: 2px solid var(--nl-cyan); animation: nl-typing 6s steps(30, end) infinite, nl-caret 0.7s step-end infinite; }
+.nl-twinkle { animation: nl-twinkle 3.4s ease-in-out infinite; }
+.nl-needle { animation: nl-needle 6s cubic-bezier(0.45, 0, 0.25, 1) infinite; }
+.nl-sweep { animation: nl-radar 4.5s linear infinite; }
+.nl-ping { transform-origin: center; animation: nl-ping 2.6s ease-out infinite; }
+.nl-orbit { animation: nl-radar 30s linear infinite; }
+.nl-counter { animation: nl-counter 30s linear infinite; }
+.nl-orbit-rev { animation: nl-counter 44s linear infinite; }
+.nl-counter-rev { animation: nl-radar 44s linear infinite; }
+.nl-dash { animation: nl-dash 1.4s linear infinite; }
+.nl-ring-bell { transform-origin: 50% 8%; animation: nl-bell 3.6s ease-in-out infinite; }
+.nl-wobble { animation: nl-wobble 3.2s ease-in-out infinite; }
+.nl-cycle { animation: nl-cycle 7.5s ease-in-out infinite both; animation-delay: calc(var(--i, 0) * 0.9s); }
+.nl-spinner { animation: nl-radar 0.9s linear infinite; }
+.nl-spin-out { animation: nl-spin-out 8s linear infinite both; animation-delay: calc(var(--i, 0) * 1s); }
+.nl-check-in { animation: nl-check-in 8s linear infinite both; animation-delay: calc(var(--i, 0) * 1s); }
+.nl-light { animation: nl-light 8s ease-in-out infinite both; animation-delay: calc(var(--i, 0) * 1.6s); }
+.nl-travel { animation: nl-travel 8s linear infinite; }
+.nl-progress-ring { stroke-dasharray: 289; animation: nl-progress 6s ease-in-out infinite; }
+.nl-pulse { animation: nl-pulse 2.2s ease-in-out infinite; }
+
+@keyframes nl-spin { to { --nl-angle: 360deg; } }
+@keyframes nl-grid { to { background-position: 0 56px, 56px 0; } }
+@keyframes nl-shift { to { background-position: 250% 0; } }
+@keyframes nl-typing { 0% { width: 0; } 55%, 90% { width: 30ch; } 100% { width: 0; } }
+@keyframes nl-caret { 50% { border-color: transparent; } }
+@keyframes nl-twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+@keyframes nl-needle { 0% { transform: rotate(-68deg); } 35% { transform: rotate(-22deg); } 60% { transform: rotate(30deg); } 80% { transform: rotate(-4deg); } 100% { transform: rotate(-68deg); } }
+@keyframes nl-radar { to { transform: rotate(360deg); } }
+@keyframes nl-counter { to { transform: rotate(-360deg); } }
+@keyframes nl-ping { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(2.6); opacity: 0; } }
+@keyframes nl-dash { to { stroke-dashoffset: -28; } }
+@keyframes nl-bell { 0%, 50%, 100% { transform: rotate(0); } 8% { transform: rotate(16deg); } 18% { transform: rotate(-14deg); } 28% { transform: rotate(10deg); } 38% { transform: rotate(-6deg); } }
+@keyframes nl-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+@keyframes nl-cycle { 0%, 14%, 100% { transform: scale(1); box-shadow: none; } 6% { transform: scale(1.09); box-shadow: 0 0 22px -3px var(--tone); } }
+@keyframes nl-spin-out { 0%, 25% { opacity: 1; } 30%, 92% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes nl-check-in { 0%, 25% { opacity: 0; transform: scale(0.4); } 32%, 90% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.4); } }
+@keyframes nl-light { 0% { opacity: 0.3; } 10% { opacity: 0.3; } 18%, 82% { opacity: 1; } 100% { opacity: 0.3; } }
+@keyframes nl-travel { 0% { left: 0; } 100% { left: 100%; } }
+@keyframes nl-progress { 0% { stroke-dashoffset: 289; } 70%, 100% { stroke-dashoffset: 0; } }
+@keyframes nl-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--tone) 55%, transparent); } 50% { box-shadow: 0 0 0 10px transparent; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .nl-type { width: 30ch; }
+  .nl-progress-ring { stroke-dashoffset: 0; }
+  .nl-spin-out { opacity: 0; }
+  .nl-check-in { opacity: 1; }
+  .nl-light { opacity: 1; }
+}
+
+.nl-shimmer-bar { background-image: linear-gradient(100deg, var(--tone), color-mix(in oklab, var(--tone) 40%, #fff), var(--tone)); background-size: 200% 100%; animation: shimmer 2.2s linear infinite; }
