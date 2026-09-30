@@ -1,9 +1,8 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { ArrowRight, CalendarDays, Check, FileText, Hospital, Menu, ShieldCheck, Stethoscope, UsersRound, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
-import { HospitalScene } from "@/components/motion/hospital-scene";
-import { CountUp, Reveal, Stagger, StaggerItem, Tilt } from "@/components/motion/primitives";
+import { Reveal } from "@/components/motion/primitives";
 import { ThemeToggle } from "@/components/motion/theme-toggle";
 import { SafetyNotice, SaarthiLogo, SectionIntro } from "@/components/saarthi-ui";
 import { Button } from "@/components/ui/button";
@@ -12,42 +11,6 @@ import { useAuth } from "@/lib/auth-context";
 import { canAccessPortal, homePathForRoles, safeRedirectPath, type PortalKind } from "@/lib/roles";
 import { getCurrentUserRoles, registerPatient, sendPasswordResetEmail, signIn, updatePassword } from "@/services/auth";
 import type { UserRole } from "@/types/database";
-
-const steps = [
-  ["01", "Tell us what you need", "Describe a symptom, test, medicine need, or follow-up in plain language."],
-  ["02", "Understand urgency", "A structured assessment helps identify the next appropriate level of care."],
-  ["03", "Find appropriate care", "Match to a department and facility using connected records."],
-  ["04", "Confirm availability", "Check current service, doctor, and diagnostic availability before travelling."],
-  ["05", "Receive care", "Record the visit and receive structured referral guidance when needed."],
-  ["06", "Complete follow-up", "Stay connected with reminders until the journey is complete."],
-] as const;
-
-const problems = [
-  ["Wasted travel", "Patients arrive to find a department, test or medicine is not currently available."],
-  ["Unclear next step", "After a visit, people are unsure where to go, when, and why."],
-  ["Lost referrals", "Referrals get stuck between facilities without anyone tracking them."],
-  ["Missed follow-up", "Care is not completed because no one reminds or checks in."],
-] as const;
-
-const patientPoints = [
-  "Describe what you need in plain language and understand how urgent it may be.",
-  "See which nearby verified facilities report the service, doctor, test or medicine available — and when it was last updated.",
-  "Follow one connected journey: visit, referral and follow-up in one place.",
-  "Get reminders so care is completed, not forgotten.",
-] as const;
-
-const institutionPoints = [
-  "Keep department, service, doctor, diagnostic and medicine availability current for the people who depend on it.",
-  "Receive structured referrals with a clear status trail instead of phone calls and paper.",
-  "Track patients, visits and follow-ups your facility is responsible for.",
-  "Every change is attributed and audit-logged; access is limited by role and facility.",
-] as const;
-
-const stats = [
-  { value: 6, suffix: "-step", label: "guided care journey" },
-  { value: 100, suffix: "%", label: "real, verified availability" },
-  { value: 24, suffix: "/7", label: "safety-first triage rule" },
-] as const;
 
 const navLinks = [
   ["/how-it-works", "How it works"],
@@ -108,153 +71,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function HomePage() {
-  return (
-    <PublicShell>
-      <main>
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute -left-24 -top-24 -z-10 size-72 animate-blob rounded-full bg-brand/20 blur-3xl" aria-hidden="true" />
-          <div className="pointer-events-none absolute -right-16 top-40 -z-10 size-80 animate-blob rounded-full bg-gold/20 blur-3xl" style={{ animationDelay: "-6s" }} aria-hidden="true" />
-          <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
-            <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-              <div>
-                <Reveal on="mount">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-card/70 px-3 py-1 text-xs font-semibold text-brand">
-                    <span className="size-1.5 animate-pulse-dot rounded-full bg-brand" />Care coordination platform
-                  </span>
-                </Reveal>
-                <Reveal on="mount" delay={0.08}>
-                  <h1 className="mt-5 max-w-3xl font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl">
-                    Healthcare access should not require <span className="text-gradient-brand">unnecessary journeys.</span>
-                  </h1>
-                </Reveal>
-                <Reveal on="mount" delay={0.16}>
-                  <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">SaarthiX helps patients identify appropriate care, verify real service availability, navigate referrals, and stay connected after their healthcare visit.</p>
-                </Reveal>
-                <Reveal on="mount" delay={0.24}>
-                  <div className="mt-8 flex flex-wrap items-center gap-3">
-                    <Button asChild size="lg" className="rounded-full"><Link to="/patient/assessment">Find Care <ArrowRight /></Link></Button>
-                    <Button asChild variant="outline" size="lg" className="rounded-full"><a href="#institutions">For Healthcare Institutions</a></Button>
-                  </div>
-                </Reveal>
-                <Reveal on="mount" delay={0.3} className="mt-9 max-w-xl"><SafetyNotice emergency /></Reveal>
-                <Stagger on="mount" className="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-border/60 pt-6">
-                  {stats.map((s) => (
-                    <StaggerItem key={s.label}>
-                      <p className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl"><CountUp value={s.value} eager />{s.suffix}</p>
-                      <p className="mt-1 text-xs leading-snug text-muted-foreground">{s.label}</p>
-                    </StaggerItem>
-                  ))}
-                </Stagger>
-              </div>
-              <Reveal on="mount" delay={0.15} x={20} y={0}><HospitalScene /></Reveal>
-            </div>
-          </div>
-        </section>
-
-        <div className="mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-brand/40 to-transparent px-5 sm:px-8" />
-
-        <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
-          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-            <Reveal><SectionIntro eyebrow="The problem" title="Too many journeys end at the wrong door" description="People travel to a facility only to find the service, doctor, test or medicine they need is not available — then have to start again, with no one guiding the next step." /></Reveal>
-            <Stagger className="grid gap-4 sm:grid-cols-2">
-              {problems.map(([title, text]) => (
-                <StaggerItem key={title}>
-                  <Tilt><div className="h-full rounded-2xl border border-border/70 bg-card/70 p-5 shadow-card transition-shadow hover:shadow-brand"><h2 className="font-display text-base font-semibold">{title}</h2><p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{text}</p></div></Tilt>
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
-          <Reveal><SectionIntro title="How SaarthiX works" description="A guided path from a first question to a completed, tracked healthcare journey." /></Reveal>
-          <Stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {steps.map(([number, title, description]) => (
-              <StaggerItem key={number}>
-                <div className="group h-full rounded-2xl border border-border/70 bg-card/65 p-5 shadow-card backdrop-blur-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-brand/40">
-                  <span className="font-display text-2xl font-bold text-brand/30 transition-colors group-hover:text-brand/60">{number}</span>
-                  <h2 className="mt-2 font-display text-base font-semibold">{title}</h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{description}</p>
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-16">
-          <Reveal>
-            <div className="rounded-3xl border border-border/70 bg-card/55 p-6 shadow-brand backdrop-blur-2xl sm:p-8">
-              <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-                <div>
-                  <SectionIntro title="Core capabilities" description="Coordination tools built for patients and the institutions that serve them." />
-                  <div className="mt-6 rounded-2xl bg-brand-soft/70 p-4"><p className="text-sm font-medium text-foreground">"Right Care. Right Place. Right Time."</p></div>
-                </div>
-                <Stagger className="grid gap-4 sm:grid-cols-2">
-                  <StaggerItem><Capability icon={Stethoscope} title="AI-assisted need & urgency assessment" text="Guided, safe intake that never diagnoses." /></StaggerItem>
-                  <StaggerItem><Capability icon={Hospital} title="Right facility & service check" text="Verified availability, not guesswork." /></StaggerItem>
-                  <StaggerItem><Capability icon={FileText} title="Structured referral guidance" text="Clear next steps when care must continue elsewhere." /></StaggerItem>
-                  <StaggerItem><Capability icon={CalendarDays} title="After-hospital follow-up" text="Reminders and continuity after the visit." /></StaggerItem>
-                </Stagger>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-
-        <section id="institutions" className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
-          <div className="grid gap-5 lg:grid-cols-2">
-            <Reveal x={-16} y={0}>
-              <div className="h-full rounded-3xl border border-border/70 bg-card/70 p-7 shadow-card transition-shadow hover:shadow-brand">
-                <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand"><UsersRound className="size-5" /></span>
-                <h2 className="mt-4 font-display text-2xl font-bold tracking-tight">For patients</h2>
-                <Stagger as="ul" className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-                  {patientPoints.map((point) => <StaggerItem as="li" key={point}><span className="flex gap-2.5"><Check className="mt-0.5 size-4 shrink-0 text-success" />{point}</span></StaggerItem>)}
-                </Stagger>
-                <Button asChild className="mt-6 rounded-full"><Link to="/register">Create a patient account</Link></Button>
-              </div>
-            </Reveal>
-            <Reveal x={16} y={0}>
-              <div className="h-full rounded-3xl border border-border/70 bg-card/70 p-7 shadow-card transition-shadow hover:shadow-brand">
-                <span className="grid size-10 place-items-center rounded-xl bg-brand-soft text-brand"><Hospital className="size-5" /></span>
-                <h2 className="mt-4 font-display text-2xl font-bold tracking-tight">For healthcare institutions</h2>
-                <Stagger as="ul" className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-                  {institutionPoints.map((point) => <StaggerItem as="li" key={point}><span className="flex gap-2.5"><Check className="mt-0.5 size-4 shrink-0 text-success" />{point}</span></StaggerItem>)}
-                </Stagger>
-                <Button asChild variant="outline" className="mt-6 rounded-full"><Link to="/contact">Talk to us about onboarding</Link></Button>
-              </div>
-            </Reveal>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8">
-          <Reveal>
-            <div className="relative overflow-hidden rounded-3xl border border-brand/20 bg-gradient-prism p-8 text-primary-foreground shadow-brand">
-              <div className="pointer-events-none absolute -right-10 -top-10 size-48 animate-float rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
-              <div className="relative flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold"><ShieldCheck className="size-3.5" /> Safety first</span>
-                  <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">Coordination you can trust</h2>
-                  <p className="mt-2 max-w-2xl text-primary-foreground/85">SaarthiX is a coordination and decision-support platform, not a diagnostic or autonomous treatment system.</p>
-                </div>
-                <Button asChild variant="outline" className="shrink-0 rounded-full border-white/40 bg-white/10 text-primary-foreground hover:bg-white/20"><Link to="/privacy">Read safety and privacy</Link></Button>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-      </main>
-    </PublicShell>
-  );
-}
-
-function Capability({ icon: Icon, title, text }: { icon: typeof Stethoscope; title: string; text: string }) {
-  return (
-    <div className="group h-full rounded-2xl border border-border/70 bg-card/75 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-brand">
-      <span className="grid size-9 place-items-center rounded-xl bg-brand-soft text-brand transition-transform duration-300 group-hover:scale-110"><Icon className="size-4" /></span>
-      <h2 className="mt-4 font-display text-base font-semibold">{title}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{text}</p>
-    </div>
-  );
-}
+export { HomePage } from "@/components/landing/landing-page";
 
 type AuthMode = "login" | "register" | "forgot" | "reset";
 const authCopy: Record<AuthMode, readonly [string, string]> = { login: ["Welcome back", "Sign in to continue your healthcare journey."], register: ["Create your SaarthiX account", "Start a secure, patient-first care coordination journey."], forgot: ["Reset your password", "Enter your account email and we'll help you regain access."], reset: ["Choose a new password", "Set a new password for your SaarthiX account."] };
