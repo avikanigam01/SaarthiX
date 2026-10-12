@@ -24,7 +24,7 @@ const portalConfig = {
     home: "/patient/dashboard",
     notifications: "/patient/notifications",
     items: [
-      ["Dashboard", "/patient/dashboard", LayoutDashboard], ["Assessment", "/patient/assessment", ClipboardList], ["Facilities", "/patient/facilities", Hospital], ["Journey", "/patient/journey", FileText], ["Referrals", "/patient/referrals", FileText], ["Visits", "/patient/visits", ClipboardList], ["Follow-ups", "/patient/followups", ClipboardList], ["Notifications", "/patient/notifications", Bell], ["Profile", "/patient/profile", Users], ["Settings", "/patient/settings", Settings],
+      ["Dashboard", "/patient/dashboard", LayoutDashboard], ["Assessment", "/patient/assessment", ClipboardList], ["Facilities", "/patient/facilities", Hospital], ["Journey", "/patient/journey", FileText], ["Referrals", "/patient/referrals", FileText], ["Visits", "/patient/visits", ClipboardList], ["Follow-ups", "/patient/followups", ClipboardList], ["Notifications", "/patient/notifications", Bell], ["Profile", "/patient/profile", Users], ["My Health QR", "/patient/health-record", ShieldCheck], ["Settings", "/patient/settings", Settings],
     ],
   },
   hospital: {
@@ -32,7 +32,7 @@ const portalConfig = {
     home: "/hospital/dashboard",
     notifications: "/hospital/notifications",
     items: [
-      ["Dashboard", "/hospital/dashboard", LayoutDashboard], ["Facility profile", "/hospital/profile", Hospital], ["Departments", "/hospital/departments", ClipboardList], ["Services", "/hospital/services", ClipboardList], ["Doctors", "/hospital/doctors", Users], ["Diagnostics", "/hospital/diagnostics", ClipboardList], ["Medicines", "/hospital/medicines", FileText], ["Referrals", "/hospital/referrals", FileText], ["Patients", "/hospital/patients", Users], ["Visits", "/hospital/visits", ClipboardList], ["Follow-ups", "/hospital/followups", ClipboardList], ["Notifications", "/hospital/notifications", Bell], ["Settings", "/hospital/settings", Settings],
+      ["Dashboard", "/hospital/dashboard", LayoutDashboard], ["Facility profile", "/hospital/profile", Hospital], ["Departments", "/hospital/departments", ClipboardList], ["Services", "/hospital/services", ClipboardList], ["Doctors", "/hospital/doctors", Users], ["Diagnostics", "/hospital/diagnostics", ClipboardList], ["Medicines", "/hospital/medicines", FileText], ["Referrals", "/hospital/referrals", FileText], ["Patients", "/hospital/patients", Users], ["Visits", "/hospital/visits", ClipboardList], ["Scan Health QR", "/hospital/scan-qr", ShieldCheck], ["Medicine forecast", "/hospital/forecast", ClipboardList], ["Follow-ups", "/hospital/followups", ClipboardList], ["Notifications", "/hospital/notifications", Bell], ["Settings", "/hospital/settings", Settings],
     ],
   },
   coordinator: {
