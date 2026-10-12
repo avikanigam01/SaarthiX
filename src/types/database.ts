@@ -80,9 +80,6 @@ export interface Facility {
   created_by: string | null;
   created_at: string;
   updated_at: string;
-  source_url?: string | null;
-  source_checked_at?: string | null;
-  source_notes?: string | null;
 }
 
 export interface FacilityStaff {
@@ -300,6 +297,13 @@ export interface Visit {
   completed_by: string | null;
   created_at: string;
   updated_at: string;
+  token_number?: number | null;
+  queue_date?: string | null;
+  queue_status?: "waiting" | "called" | "in_progress" | "completed" | "skipped" | "cancelled";
+  estimated_start_at?: string | null;
+  called_at?: string | null;
+  completed_at?: string | null;
+  skipped_count?: number;
 }
 
 export interface VisitWithRefs extends Visit {
