@@ -39,11 +39,13 @@ import { Route as HospitalDepartmentsRouteImport } from './routes/hospital.depar
 import { Route as HospitalDiagnosticsRouteImport } from './routes/hospital.diagnostics'
 import { Route as HospitalDoctorsRouteImport } from './routes/hospital.doctors'
 import { Route as HospitalFollowupsRouteImport } from './routes/hospital.followups'
+import { Route as HospitalForecastRouteImport } from './routes/hospital.forecast'
 import { Route as HospitalMedicinesRouteImport } from './routes/hospital.medicines'
 import { Route as HospitalNotificationsRouteImport } from './routes/hospital.notifications'
 import { Route as HospitalPatientsRouteImport } from './routes/hospital.patients'
 import { Route as HospitalProfileRouteImport } from './routes/hospital.profile'
 import { Route as HospitalReferralsRouteImport } from './routes/hospital.referrals'
+import { Route as HospitalScanQrRouteImport } from './routes/hospital.scan-qr'
 import { Route as HospitalServicesRouteImport } from './routes/hospital.services'
 import { Route as HospitalSettingsRouteImport } from './routes/hospital.settings'
 import { Route as HospitalVisitsRouteImport } from './routes/hospital.visits'
@@ -51,6 +53,7 @@ import { Route as PatientAssessmentRouteImport } from './routes/patient.assessme
 import { Route as PatientDashboardRouteImport } from './routes/patient.dashboard'
 import { Route as PatientFacilitiesRouteImport } from './routes/patient.facilities'
 import { Route as PatientFollowupsRouteImport } from './routes/patient.followups'
+import { Route as PatientHealthRecordRouteImport } from './routes/patient.health-record'
 import { Route as PatientJourneyRouteImport } from './routes/patient.journey'
 import { Route as PatientNotificationsRouteImport } from './routes/patient.notifications'
 import { Route as PatientProfileRouteImport } from './routes/patient.profile'
@@ -221,6 +224,11 @@ const HospitalFollowupsRoute = HospitalFollowupsRouteImport.update({
   path: '/hospital/followups',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HospitalForecastRoute = HospitalForecastRouteImport.update({
+  id: '/hospital/forecast',
+  path: '/hospital/forecast',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HospitalMedicinesRoute = HospitalMedicinesRouteImport.update({
   id: '/hospital/medicines',
   path: '/hospital/medicines',
@@ -244,6 +252,11 @@ const HospitalProfileRoute = HospitalProfileRouteImport.update({
 const HospitalReferralsRoute = HospitalReferralsRouteImport.update({
   id: '/hospital/referrals',
   path: '/hospital/referrals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HospitalScanQrRoute = HospitalScanQrRouteImport.update({
+  id: '/hospital/scan-qr',
+  path: '/hospital/scan-qr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HospitalServicesRoute = HospitalServicesRouteImport.update({
@@ -279,6 +292,11 @@ const PatientFacilitiesRoute = PatientFacilitiesRouteImport.update({
 const PatientFollowupsRoute = PatientFollowupsRouteImport.update({
   id: '/patient/followups',
   path: '/patient/followups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientHealthRecordRoute = PatientHealthRecordRouteImport.update({
+  id: '/patient/health-record',
+  path: '/patient/health-record',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PatientJourneyRoute = PatientJourneyRouteImport.update({
@@ -403,11 +421,13 @@ export interface FileRoutesByFullPath {
   '/hospital/diagnostics': typeof HospitalDiagnosticsRoute
   '/hospital/doctors': typeof HospitalDoctorsRoute
   '/hospital/followups': typeof HospitalFollowupsRoute
+  '/hospital/forecast': typeof HospitalForecastRoute
   '/hospital/medicines': typeof HospitalMedicinesRoute
   '/hospital/notifications': typeof HospitalNotificationsRoute
   '/hospital/patients': typeof HospitalPatientsRouteWithChildren
   '/hospital/profile': typeof HospitalProfileRoute
   '/hospital/referrals': typeof HospitalReferralsRouteWithChildren
+  '/hospital/scan-qr': typeof HospitalScanQrRoute
   '/hospital/services': typeof HospitalServicesRoute
   '/hospital/settings': typeof HospitalSettingsRoute
   '/hospital/visits': typeof HospitalVisitsRoute
@@ -415,6 +435,7 @@ export interface FileRoutesByFullPath {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/facilities': typeof PatientFacilitiesRouteWithChildren
   '/patient/followups': typeof PatientFollowupsRouteWithChildren
+  '/patient/health-record': typeof PatientHealthRecordRoute
   '/patient/journey': typeof PatientJourneyRouteWithChildren
   '/patient/notifications': typeof PatientNotificationsRoute
   '/patient/profile': typeof PatientProfileRoute
@@ -465,11 +486,13 @@ export interface FileRoutesByTo {
   '/hospital/diagnostics': typeof HospitalDiagnosticsRoute
   '/hospital/doctors': typeof HospitalDoctorsRoute
   '/hospital/followups': typeof HospitalFollowupsRoute
+  '/hospital/forecast': typeof HospitalForecastRoute
   '/hospital/medicines': typeof HospitalMedicinesRoute
   '/hospital/notifications': typeof HospitalNotificationsRoute
   '/hospital/patients': typeof HospitalPatientsRouteWithChildren
   '/hospital/profile': typeof HospitalProfileRoute
   '/hospital/referrals': typeof HospitalReferralsRouteWithChildren
+  '/hospital/scan-qr': typeof HospitalScanQrRoute
   '/hospital/services': typeof HospitalServicesRoute
   '/hospital/settings': typeof HospitalSettingsRoute
   '/hospital/visits': typeof HospitalVisitsRoute
@@ -477,6 +500,7 @@ export interface FileRoutesByTo {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/facilities': typeof PatientFacilitiesRouteWithChildren
   '/patient/followups': typeof PatientFollowupsRouteWithChildren
+  '/patient/health-record': typeof PatientHealthRecordRoute
   '/patient/journey': typeof PatientJourneyRouteWithChildren
   '/patient/notifications': typeof PatientNotificationsRoute
   '/patient/profile': typeof PatientProfileRoute
@@ -528,11 +552,13 @@ export interface FileRoutesById {
   '/hospital/diagnostics': typeof HospitalDiagnosticsRoute
   '/hospital/doctors': typeof HospitalDoctorsRoute
   '/hospital/followups': typeof HospitalFollowupsRoute
+  '/hospital/forecast': typeof HospitalForecastRoute
   '/hospital/medicines': typeof HospitalMedicinesRoute
   '/hospital/notifications': typeof HospitalNotificationsRoute
   '/hospital/patients': typeof HospitalPatientsRouteWithChildren
   '/hospital/profile': typeof HospitalProfileRoute
   '/hospital/referrals': typeof HospitalReferralsRouteWithChildren
+  '/hospital/scan-qr': typeof HospitalScanQrRoute
   '/hospital/services': typeof HospitalServicesRoute
   '/hospital/settings': typeof HospitalSettingsRoute
   '/hospital/visits': typeof HospitalVisitsRoute
@@ -540,6 +566,7 @@ export interface FileRoutesById {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/facilities': typeof PatientFacilitiesRouteWithChildren
   '/patient/followups': typeof PatientFollowupsRouteWithChildren
+  '/patient/health-record': typeof PatientHealthRecordRoute
   '/patient/journey': typeof PatientJourneyRouteWithChildren
   '/patient/notifications': typeof PatientNotificationsRoute
   '/patient/profile': typeof PatientProfileRoute
@@ -592,11 +619,13 @@ export interface FileRouteTypes {
     | '/hospital/diagnostics'
     | '/hospital/doctors'
     | '/hospital/followups'
+    | '/hospital/forecast'
     | '/hospital/medicines'
     | '/hospital/notifications'
     | '/hospital/patients'
     | '/hospital/profile'
     | '/hospital/referrals'
+    | '/hospital/scan-qr'
     | '/hospital/services'
     | '/hospital/settings'
     | '/hospital/visits'
@@ -604,6 +633,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/patient/facilities'
     | '/patient/followups'
+    | '/patient/health-record'
     | '/patient/journey'
     | '/patient/notifications'
     | '/patient/profile'
@@ -654,11 +684,13 @@ export interface FileRouteTypes {
     | '/hospital/diagnostics'
     | '/hospital/doctors'
     | '/hospital/followups'
+    | '/hospital/forecast'
     | '/hospital/medicines'
     | '/hospital/notifications'
     | '/hospital/patients'
     | '/hospital/profile'
     | '/hospital/referrals'
+    | '/hospital/scan-qr'
     | '/hospital/services'
     | '/hospital/settings'
     | '/hospital/visits'
@@ -666,6 +698,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/patient/facilities'
     | '/patient/followups'
+    | '/patient/health-record'
     | '/patient/journey'
     | '/patient/notifications'
     | '/patient/profile'
@@ -716,11 +749,13 @@ export interface FileRouteTypes {
     | '/hospital/diagnostics'
     | '/hospital/doctors'
     | '/hospital/followups'
+    | '/hospital/forecast'
     | '/hospital/medicines'
     | '/hospital/notifications'
     | '/hospital/patients'
     | '/hospital/profile'
     | '/hospital/referrals'
+    | '/hospital/scan-qr'
     | '/hospital/services'
     | '/hospital/settings'
     | '/hospital/visits'
@@ -728,6 +763,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/patient/facilities'
     | '/patient/followups'
+    | '/patient/health-record'
     | '/patient/journey'
     | '/patient/notifications'
     | '/patient/profile'
@@ -779,11 +815,13 @@ export interface RootRouteChildren {
   HospitalDiagnosticsRoute: typeof HospitalDiagnosticsRoute
   HospitalDoctorsRoute: typeof HospitalDoctorsRoute
   HospitalFollowupsRoute: typeof HospitalFollowupsRoute
+  HospitalForecastRoute: typeof HospitalForecastRoute
   HospitalMedicinesRoute: typeof HospitalMedicinesRoute
   HospitalNotificationsRoute: typeof HospitalNotificationsRoute
   HospitalPatientsRoute: typeof HospitalPatientsRouteWithChildren
   HospitalProfileRoute: typeof HospitalProfileRoute
   HospitalReferralsRoute: typeof HospitalReferralsRouteWithChildren
+  HospitalScanQrRoute: typeof HospitalScanQrRoute
   HospitalServicesRoute: typeof HospitalServicesRoute
   HospitalSettingsRoute: typeof HospitalSettingsRoute
   HospitalVisitsRoute: typeof HospitalVisitsRoute
@@ -791,6 +829,7 @@ export interface RootRouteChildren {
   PatientDashboardRoute: typeof PatientDashboardRoute
   PatientFacilitiesRoute: typeof PatientFacilitiesRouteWithChildren
   PatientFollowupsRoute: typeof PatientFollowupsRouteWithChildren
+  PatientHealthRecordRoute: typeof PatientHealthRecordRoute
   PatientJourneyRoute: typeof PatientJourneyRouteWithChildren
   PatientNotificationsRoute: typeof PatientNotificationsRoute
   PatientProfileRoute: typeof PatientProfileRoute
@@ -1011,6 +1050,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HospitalFollowupsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hospital/forecast': {
+      id: '/hospital/forecast'
+      path: '/hospital/forecast'
+      fullPath: '/hospital/forecast'
+      preLoaderRoute: typeof HospitalForecastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hospital/medicines': {
       id: '/hospital/medicines'
       path: '/hospital/medicines'
@@ -1044,6 +1090,13 @@ declare module '@tanstack/react-router' {
       path: '/hospital/referrals'
       fullPath: '/hospital/referrals'
       preLoaderRoute: typeof HospitalReferralsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hospital/scan-qr': {
+      id: '/hospital/scan-qr'
+      path: '/hospital/scan-qr'
+      fullPath: '/hospital/scan-qr'
+      preLoaderRoute: typeof HospitalScanQrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hospital/services': {
@@ -1093,6 +1146,13 @@ declare module '@tanstack/react-router' {
       path: '/patient/followups'
       fullPath: '/patient/followups'
       preLoaderRoute: typeof PatientFollowupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/health-record': {
+      id: '/patient/health-record'
+      path: '/patient/health-record'
+      fullPath: '/patient/health-record'
+      preLoaderRoute: typeof PatientHealthRecordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/patient/journey': {
@@ -1393,11 +1453,13 @@ const rootRouteChildren: RootRouteChildren = {
   HospitalDiagnosticsRoute: HospitalDiagnosticsRoute,
   HospitalDoctorsRoute: HospitalDoctorsRoute,
   HospitalFollowupsRoute: HospitalFollowupsRoute,
+  HospitalForecastRoute: HospitalForecastRoute,
   HospitalMedicinesRoute: HospitalMedicinesRoute,
   HospitalNotificationsRoute: HospitalNotificationsRoute,
   HospitalPatientsRoute: HospitalPatientsRouteWithChildren,
   HospitalProfileRoute: HospitalProfileRoute,
   HospitalReferralsRoute: HospitalReferralsRouteWithChildren,
+  HospitalScanQrRoute: HospitalScanQrRoute,
   HospitalServicesRoute: HospitalServicesRoute,
   HospitalSettingsRoute: HospitalSettingsRoute,
   HospitalVisitsRoute: HospitalVisitsRoute,
@@ -1405,6 +1467,7 @@ const rootRouteChildren: RootRouteChildren = {
   PatientDashboardRoute: PatientDashboardRoute,
   PatientFacilitiesRoute: PatientFacilitiesRouteWithChildren,
   PatientFollowupsRoute: PatientFollowupsRouteWithChildren,
+  PatientHealthRecordRoute: PatientHealthRecordRoute,
   PatientJourneyRoute: PatientJourneyRouteWithChildren,
   PatientNotificationsRoute: PatientNotificationsRoute,
   PatientProfileRoute: PatientProfileRoute,
