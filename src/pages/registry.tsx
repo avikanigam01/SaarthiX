@@ -28,6 +28,7 @@ const pages: Record<string, Page> = {
   "patient/followups/$id": lazy(() => import("@/pages/patient/followups-detail")),
   "patient/notifications": lazy(() => import("@/pages/patient/notifications")),
   "patient/profile": lazy(() => import("@/pages/patient/profile")),
+  "patient/health-record": lazy(() => import("@/pages/patient/health-record")),
   "patient/settings": lazy(() => import("@/pages/patient/settings")),
 
   "hospital/dashboard": lazy(() => import("@/pages/hospital/dashboard")),
@@ -42,6 +43,8 @@ const pages: Record<string, Page> = {
   "hospital/patients": lazy(() => import("@/pages/hospital/patients")),
   "hospital/patients/$id": lazy(() => import("@/pages/hospital/patients-detail")),
   "hospital/visits": lazy(() => import("@/pages/hospital/visits")),
+  "hospital/scan-qr": lazy(() => import("@/pages/hospital/scan-qr")),
+  "hospital/forecast": lazy(() => import("@/pages/hospital/forecast")),
   "hospital/followups": lazy(() => import("@/pages/hospital/followups")),
   "hospital/notifications": lazy(() => import("@/pages/hospital/notifications")),
   "hospital/settings": lazy(() => import("@/pages/hospital/settings")),
