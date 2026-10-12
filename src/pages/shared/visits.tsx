@@ -22,6 +22,7 @@ import { listActiveDepartments } from "@/services/departments";
 import { createFollowup } from "@/services/followups";
 import { createVisit, listVisits, updateVisitStatus, type VisitScope } from "@/services/visits";
 import type { VisitStatus, VisitWithRefs } from "@/types/database";
+import { QueueBoard } from "@/pages/shared/queue-board";
 
 const STATUSES = [{ value: "all", label: "All statuses" }, ...(["scheduled", "in_progress", "completed", "cancelled"] as const).map((s) => ({ value: s, label: labelize(s) }))];
 
@@ -46,7 +47,8 @@ export function VisitsPage({ kind }: { kind: "patient" | "hospital" }) {
     ...(kind === "hospital" ? [{ key: "patient", header: "Patient", primary: true, cell: (v: VisitWithRefs) => <span className="font-medium">{directory.nameOf(v.patient_id)}</span> }] : [{ key: "facility", header: "Facility", primary: true, cell: (v: VisitWithRefs) => <span className="font-medium">{v.facility?.name ?? "Facility"}</span> }]),
     { key: "dept", header: "Department", cell: (v) => v.department?.name ?? "—" },
     { key: "date", header: "Date & time", cell: (v) => formatDateTime(v.visit_date) },
-    { key: "status", header: "Status", cell: (v) => <StatusPill status={v.status} /> },
+    ...(kind === "patient" ? [{ key: "token", header: "Token", cell: (v: VisitWithRefs) => <span className="font-semibold text-brand">{v.token_number ? `#${v.token_number}` : "—"}</span> }] : []),
+    { key: "status", header: "Status", cell: (v) => <div className="space-y-1"><StatusPill status={v.status} />{kind === "patient" && v.queue_status ? <p className="text-xs text-muted-foreground">Queue: {labelize(v.queue_status)}{v.estimated_start_at ? ` · approx. ${formatDateTime(v.estimated_start_at)}` : ""}</p> : null}</div> },
     ...(kind === "hospital" ? [{
       key: "actions", header: "Actions", cell: (v: VisitWithRefs) => (
         <div className="flex flex-wrap gap-1.5">
@@ -61,6 +63,7 @@ export function VisitsPage({ kind }: { kind: "patient" | "hospital" }) {
 
   return (
     <>
+      {kind === "hospital" ? <div className="mb-8"><QueueBoard /></div> : null}
       <PageHeader eyebrow="Visits" title={kind === "patient" ? "Your visits" : "Visits"} description={kind === "patient" ? "Visits you've requested or had at connected facilities." : "Visits at your facility. Update status as patients are seen."} actions={kind === "hospital" ? <Button onClick={() => setAddOpen(true)}><Plus aria-hidden="true" /> Schedule visit</Button> : undefined} />
       <Toolbar><FilterSelect label="Status" value={status} onChange={(v) => { setPage(0); setStatus(v); }} options={STATUSES} /></Toolbar>
       <QueryBoundary query={query} emptyTitle="No visits recorded." emptyDescription={kind === "patient" ? "Once you request or have a visit, it will appear here." : "Visits appear here when patients request one or your team schedules it."} isEmpty={(d) => d.rows.length === 0}>
