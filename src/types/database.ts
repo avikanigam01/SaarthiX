@@ -80,6 +80,9 @@ export interface Facility {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  source_url?: string | null;
+  source_checked_at?: string | null;
+  source_notes?: string | null;
 }
 
 export interface FacilityStaff {
