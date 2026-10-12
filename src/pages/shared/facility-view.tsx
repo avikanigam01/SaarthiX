@@ -16,6 +16,7 @@ import { formatDate, formatDateTime, formatTime, isStale, relativeTime } from "@
 import { getFacility } from "@/services/facilities";
 import { listPublicDepartments, listMedicineAvailability, listPublicServices } from "@/services/facility-catalog";
 import { searchDoctorSlots } from "@/services/doctors";
+import type { Department, FacilityService, MedicineAvailability, DoctorSlot } from "@/types/database";
 import { getActiveJourney, selectJourneyFacility } from "@/services/journeys";
 
 function Freshness({ at }: { at: string | null | undefined }) {
@@ -29,15 +30,66 @@ function Freshness({ at }: { at: string | null | undefined }) {
 
 type Props = { backTo: string; allowSelect: boolean };
 
+// Presentation-only fallback records. These are deliberately labelled as demo samples
+// and are never written to Supabase or presented as facility-confirmed information.
+const demoDepartments = [
+  "Emergency & Trauma", "General Medicine", "Cardiology", "Orthopaedics",
+  "Paediatrics", "Obstetrics & Gynaecology", "General Surgery", "Neurology",
+  "Pulmonology", "Dermatology", "Ophthalmology", "Diagnostics & Imaging",
+];
+const demoServices = [
+  "DEMO — Outpatient Consultation", "DEMO — Emergency Desk (simulation only)",
+  "DEMO — Inpatient Care", "DEMO — Teleconsultation", "DEMO — Pharmacy Counter",
+  "DEMO — Ambulance Coordination (not a live service)", "DEMO — Follow-up Desk",
+  "DEMO — Discharge Support",
+];
+const demoDiagnostics = [
+  "DEMO — Complete Blood Count (CBC)", "DEMO — Blood Glucose", "DEMO — Lipid Profile",
+  "DEMO — Liver Function Test", "DEMO — Kidney Function Test", "DEMO — Thyroid Profile",
+  "DEMO — Urine Routine", "DEMO — ECG", "DEMO — X-Ray", "DEMO — Ultrasound",
+];
+const demoMedicineNames = [
+  ["DEMO — Paracetamol", "500 mg", "in_stock"],
+  ["DEMO — Oral Rehydration Salts", "Standard sachet", "in_stock"],
+  ["DEMO — Cetirizine", "10 mg", "low_stock"],
+  ["DEMO — Metformin", "500 mg", "in_stock"],
+  ["DEMO — Normal Saline", "0.9% 500 ml", "low_stock"],
+  ["DEMO — Amoxicillin", "500 mg", "out_of_stock"],
+] as const;
+function demoDate(offset: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return date.toISOString().slice(0, 10);
+}
+function demoDepartmentRows(facilityId: string): Department[] {
+  return demoDepartments.map((name, i) => ({ id: `demo-dept-${i}`, facility_id: facilityId, name: `DEMO — ${name}`, description: "Sample data only; not verified by this facility.", status: i === 2 || i === 6 ? "limited" : "available", is_active: true, updated_by: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }));
+}
+function demoServiceRows(facilityId: string, names: string[]): FacilityService[] {
+  return names.map((name, i) => ({ id: `demo-service-${i}`, facility_id: facilityId, name, description: "Demo sample only — actual availability must be confirmed with the facility.", status: i === 2 ? "limited" : "available", last_verified_at: null, last_verified_by: null, is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }));
+}
+function demoMedicineRows(): MedicineAvailability[] {
+  return demoMedicineNames.map(([name, strength, stock_status], i) => ({ medicine_id: `demo-medicine-${i}`, name, generic_name: null, strength, dosage_form: null, stock_status, updated_at: new Date().toISOString() }));
+}
+function demoDoctorSlots(): DoctorSlot[] {
+  const doctors = [
+    ["DEMO — Dr. Aarav Sharma", "General Medicine", "General Medicine"],
+    ["DEMO — Dr. Meera Verma", "Cardiology", "Cardiology"],
+    ["DEMO — Dr. Kabir Singh", "Orthopaedics", "Orthopaedics"],
+    ["DEMO — Dr. Ananya Gupta", "Paediatrics", "Paediatrics"],
+    ["DEMO — Dr. Rohan Mishra", "Dermatology", "Dermatology"],
+  ];
+  return doctors.map(([full_name, specialization, department_name], i) => ({ doctor_id: `demo-doctor-${i}`, full_name, specialization, department_name, availability_date: demoDate(1 + i % 5), start_time: ["09:00:00", "10:00:00", "11:00:00", "14:00:00", "16:00:00"][i], end_time: ["09:30:00", "10:30:00", "11:30:00", "14:30:00", "16:30:00"][i], status: i === 2 ? "limited" : "available" }));
+}
+
 /** Verified facility page used by patients (with journey selection) and coordinators (read-only). */
 export function FacilityView({ backTo, allowSelect }: Props) {
   const { id = "" } = useParams({ strict: false }) as { id?: string };
   const facility = useQuery({ queryKey: ["facility", id], queryFn: () => getFacility(id), enabled: Boolean(id) });
-  const departments = useQuery({ queryKey: ["facility", id, "departments"], queryFn: () => listPublicDepartments(id), enabled: Boolean(id) });
-  const services = useQuery({ queryKey: ["facility", id, "services"], queryFn: () => listPublicServices(id, "facility_services"), enabled: Boolean(id) });
-  const diagnostics = useQuery({ queryKey: ["facility", id, "diagnostics"], queryFn: () => listPublicServices(id, "diagnostic_services"), enabled: Boolean(id) });
-  const medicines = useQuery({ queryKey: ["facility", id, "medicines"], queryFn: () => listMedicineAvailability(id), enabled: Boolean(id) });
-  const slots = useQuery({ queryKey: ["facility", id, "slots"], queryFn: () => searchDoctorSlots(id), enabled: Boolean(id) });
+  const departments = useQuery({ queryKey: ["facility", id, "departments"], queryFn: async () => { const rows = await listPublicDepartments(id); return rows.length ? rows : facility.data?.is_verified ? demoDepartmentRows(id) : []; }, enabled: Boolean(id) && facility.isSuccess });
+  const services = useQuery({ queryKey: ["facility", id, "services"], queryFn: async () => { const rows = await listPublicServices(id, "facility_services"); return rows.length ? rows : facility.data?.is_verified ? demoServiceRows(id, demoServices) : []; }, enabled: Boolean(id) && facility.isSuccess });
+  const diagnostics = useQuery({ queryKey: ["facility", id, "diagnostics"], queryFn: async () => { const rows = await listPublicServices(id, "diagnostic_services"); return rows.length ? rows : facility.data?.is_verified ? demoServiceRows(id, demoDiagnostics) : []; }, enabled: Boolean(id) && facility.isSuccess });
+  const medicines = useQuery({ queryKey: ["facility", id, "medicines"], queryFn: async () => { const rows = await listMedicineAvailability(id); return rows.length ? rows : facility.data?.is_verified ? demoMedicineRows() : []; }, enabled: Boolean(id) && facility.isSuccess });
+  const slots = useQuery({ queryKey: ["facility", id, "slots"], queryFn: async () => { const rows = await searchDoctorSlots(id); return rows.length ? rows : facility.data?.is_verified ? demoDoctorSlots() : []; }, enabled: Boolean(id) && facility.isSuccess });
 
   if (facility.isLoading) return <LoadingState label="Loading facility..." />;
   if (facility.isError) return <ErrorState onRetry={() => void facility.refetch()} />;
@@ -50,6 +102,8 @@ export function FacilityView({ backTo, allowSelect }: Props) {
       <PageHeader eyebrow={f.facility_type} title={f.name} description={`${f.address}, ${f.district}, ${f.state}`} actions={f.is_verified ? <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success-foreground"><BadgeCheck className="size-4" aria-hidden="true" /> Verified</span> : null} />
 
       {allowSelect ? <SelectFacilityPanel facilityId={f.id} facilityName={f.name} departments={departments.data ?? []} /> : null}
+
+      {([departments, services, diagnostics, medicines, slots].some((q) => q.isSuccess && (q.data?.length ?? 0) > 0 && String((q.data as Array<{ id?: string; doctor_id?: string; medicine_id?: string }>)[0]?.id ?? (q.data as Array<{ doctor_id?: string; medicine_id?: string }>)[0]?.doctor_id ?? (q.data as Array<{ medicine_id?: string }>)[0]?.medicine_id ?? "").startsWith("demo-"))) ? <div className="mt-4 rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm"><strong>DEMO SAMPLE — NOT VERIFIED.</strong> Empty sections are filled with fictional examples for workflow previews only. They are not this facility’s confirmed departments, doctors, schedules, services, or medicine stock. Confirm all real information with the facility.</div> : null}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Panel title="Contact">
