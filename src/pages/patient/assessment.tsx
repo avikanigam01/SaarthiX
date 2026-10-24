@@ -1,6 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { AlertTriangle, RotateCcw } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { AppLink, LinkButton } from "@/components/data/app-link";
@@ -61,6 +63,7 @@ const schema = z.object({
 export default function PatientAssessmentPage() {
   const { userId, profile } = useCurrentUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [signs, setSigns] = useState<string[]>([]);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [result, setResult] = useState<Assessment | null>(null);
@@ -76,6 +79,16 @@ export default function PatientAssessmentPage() {
     onSuccess: (assessment) => {
       setResult(assessment);
       void queryClient.invalidateQueries({ queryKey: ["journey-active", userId] });
+      // Urgent results stay on screen so the emergency advice is never skipped.
+      // Everything else continues straight to the facility search.
+      if (assessment.urgency_level !== "urgent") {
+        toast.success(
+          assessment.recommended_department
+            ? `Result ready. Suggested department: ${assessment.recommended_department}. Showing facilities…`
+            : "Result ready. Showing facilities…",
+        );
+        void navigate({ to: "/patient/facilities" });
+      }
     },
     onError: (e) => devLog("assessment.run", e),
   });
