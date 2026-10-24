@@ -190,7 +190,9 @@ async function callProvider(input: SafeInput): Promise<string> {
             ],
             generationConfig: {
               temperature: 0,
-              maxOutputTokens: 500,
+              // Newer Gemini models spend part of this budget on internal "thinking";
+              // 500 can cut the JSON off mid-way, so leave generous headroom.
+              maxOutputTokens: 2000,
               responseMimeType: "application/json",
             },
           }),
