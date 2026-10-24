@@ -28,7 +28,20 @@ export async function createAssessment(input: AssessmentInput): Promise<Assessme
 
 /** Asks the secure `assess` Edge Function for decision support on a saved assessment. */
 export async function runAssessment(assessmentId: string): Promise<Assessment> {
-  const { data, error } = await supabase.functions.invoke("assess", { body: { assessment_id: assessmentId } });
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new ServiceError("Decision support is taking too long. Your answers are saved — you can try again, or continue to find a facility.", "timeout")),
+      35_000,
+    );
+  });
+  let invoked: Awaited<ReturnType<typeof supabase.functions.invoke>>;
+  try {
+    invoked = await Promise.race([supabase.functions.invoke("assess", { body: { assessment_id: assessmentId } }), timeout]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+  const { data, error } = invoked;
   if (error) {
     devLog("assessment.run", error);
     let code = "";
