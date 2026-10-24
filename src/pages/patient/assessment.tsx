@@ -136,8 +136,9 @@ export default function PatientAssessmentPage() {
       {savedId && runError ? (
         <Panel title="Your answers are saved">
           <InlineError message={runError} />
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Button onClick={() => run.mutate(savedId)} disabled={run.isPending}><RotateCcw aria-hidden="true" /> Try again</Button>
+            <LinkButton to="/patient/facilities" variant="secondary">Continue to find a facility</LinkButton>
             <Button variant="outline" onClick={reset}>Start over</Button>
           </div>
         </Panel>
