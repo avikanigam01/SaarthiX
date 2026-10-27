@@ -9,6 +9,7 @@ export const mr: Messages = {
   "common.closeMenu": "मेनू बंद करा",
   "common.openNav": "नेव्हिगेशन उघडा",
   "common.closeNav": "नेव्हिगेशन बंद करा",
+  "common.closeNavOverlay": "नेव्हिगेशन ओव्हरले बंद करा",
   "common.homeAria": "सारथीX मुख्यपृष्ठ",
   "common.workspaceHome": "वर्कस्पेस होमवर जा",
   "common.account": "खाते",
@@ -84,4 +85,9 @@ export const mr: Messages = {
   "hero.forInstitutions": "आरोग्य संस्थांसाठी",
   "hero.emergencyStrong": "ही आणीबाणी असू शकते असे वाटल्यास लगेच डॉक्टर किंवा रुग्णालयाची मदत घ्या.",
   "hero.emergencyRest": "सारथीX निर्णयासाठी मदत आणि उपचारांचा समन्वय करते. ते आजाराचे निदान करत नाही आणि पात्र डॉक्टरांची जागा घेत नाही.",
+
+  "cta.title1": "योग्य उपचार शोधा,",
+  "cta.title2": "विनाकारण फेऱ्या न मारता.",
+  "cta.body": "तुमचा त्रास सांगा, जवळच्या कोणत्या रुग्णालयात ती सेवा खरोखर मिळते ते पाहा, आणि उपचारानंतरही संपर्कात राहा.",
+  "cta.readSafety": "सुरक्षा आणि गोपनीयतेबद्दल वाचा",
 };
