@@ -164,43 +164,62 @@ async function callProvider(input: SafeInput): Promise<string> {
       area: [input.district, input.state].filter(Boolean).join(", "),
     });
 
+  // Gemini may take longer under load. Keep the total provider call bounded,
+  // but allow enough time for a normal response and transient retries.
+  const PROVIDER_TIMEOUT_MS = 55_000;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 25_000);
+  const timer = setTimeout(() => controller.abort(), PROVIDER_TIMEOUT_MS);
   try {
     // Gemini API support. Keep this server-side: AI_API_KEY is a Supabase secret.
     if (provider === "gemini") {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-        {
+      const endpoint =
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+      const requestBody = JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: SYSTEM_PROMPT }],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: userContent }],
+          },
+        ],
+        generationConfig: {
+          temperature: 0,
+          // Newer Gemini models may need extra output-token headroom for JSON.
+          maxOutputTokens: 2000,
+          responseMimeType: "application/json",
+        },
+      });
+
+      // Retry only transient provider failures; never log API keys or patient input.
+      let res: Response;
+      let attempt = 0;
+      while (true) {
+        attempt += 1;
+        res = await fetch(endpoint, {
           method: "POST",
           signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
             "x-goog-api-key": apiKey,
           },
-          body: JSON.stringify({
-            systemInstruction: {
-              parts: [{ text: SYSTEM_PROMPT }],
-            },
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: userContent }],
-              },
-            ],
-            generationConfig: {
-              temperature: 0,
-              // Newer Gemini models spend part of this budget on internal "thinking";
-              // 500 can cut the JSON off mid-way, so leave generous headroom.
-              maxOutputTokens: 2000,
-              responseMimeType: "application/json",
-            },
-          }),
-        },
-      );
+          body: requestBody,
+        });
+
+        const retryable = [429, 500, 502, 503, 504].includes(res.status);
+        if (res.ok || !retryable || attempt >= 3) break;
+
+        // 500 ms, then 1000 ms. The shared 25-second timeout still bounds total work.
+        await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** (attempt - 1)));
+      }
+
       if (!res.ok) {
-        // Log provider status only; do not return provider details to the client.
-        console.error("Gemini API request failed:", res.status);
+        // Log status and attempts only; provider response bodies may contain sensitive data.
+        console.error("Gemini API request failed:", {
+          status: res.status,
+          attempts: attempt,
+        });
         throw new Error(`provider_${res.status}`);
       }
       const data = await res.json();
@@ -251,6 +270,16 @@ async function callProvider(input: SafeInput): Promise<string> {
     const data = await res.json();
     const block = Array.isArray(data?.content) ? data.content.find((b: { type?: string }) => b?.type === "text") : null;
     return String(block?.text ?? "");
+  } catch (error) {
+    // Make timeout failures distinguishable from provider HTTP errors.
+    if (controller.signal.aborted) {
+      console.error("AI provider request timed out:", {
+        provider,
+        timeout_ms: PROVIDER_TIMEOUT_MS,
+      });
+      throw new Error("provider_timeout");
+    }
+    throw error;
   } finally {
     clearTimeout(timer);
   }
@@ -388,7 +417,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
     .maybeSingle();
 
   if (writeError) {
-    console.error("assess: write failure:", writeError.code);
+    // Include database diagnostics, but never log the assessment contents or user input.
+    console.error("assess: write failure:", {
+      code: writeError.code,
+      message: writeError.message,
+      details: writeError.details,
+      hint: writeError.hint,
+    });
     return json(req, 500, { error: "write_failed" });
   }
 
