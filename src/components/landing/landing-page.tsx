@@ -12,6 +12,7 @@ import { Backdrop, NeonChip, NeonList, NeonTile, Panel, SectionHead, toneClass, 
 import { StepVisual, type StepVisualKey } from "@/components/landing/step-visuals";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/primitives";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useT } from "@/i18n";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ content */
@@ -86,31 +87,32 @@ const marquee = ["Tell us what you need", "Understand urgency", "Find appropriat
 /* ---------------------------------------------------------------- sections */
 
 function Hero() {
+  const t = useT();
   return (
     <section className="relative overflow-hidden">
       <Backdrop />
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
         <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
-            <Reveal on="mount"><NeonChip icon={HeartPulse}><span className="nl-pulse mr-0.5 inline-block size-1.5 animate-pulse-dot rounded-full nl-bg-tone" />Care coordination platform</NeonChip></Reveal>
+            <Reveal on="mount"><NeonChip icon={HeartPulse}><span className="nl-pulse mr-0.5 inline-block size-1.5 animate-pulse-dot rounded-full nl-bg-tone" />{t("hero.chip")}</NeonChip></Reveal>
             <Reveal on="mount" delay={0.08}>
               <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-                Healthcare access should not require <span className="nl-neon-text">unnecessary journeys.</span>
+                {t("hero.title1")} <span className="nl-neon-text">{t("hero.title2")}</span>
               </h1>
             </Reveal>
             <Reveal on="mount" delay={0.16}>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">SaarthiX helps patients identify appropriate care, verify real service availability, navigate referrals, and stay connected after their healthcare visit.</p>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">{t("hero.body")}</p>
             </Reveal>
             <Reveal on="mount" delay={0.24}>
               <div className="mt-9 flex flex-wrap items-center gap-3.5">
-                <Link to="/patient/assessment" className="nl-btn inline-flex h-12 items-center gap-2 rounded-full px-7 text-base">Find Care <ArrowRight className="size-4" /></Link>
-                <a href="#institutions" className="nl-btn-ghost inline-flex h-12 items-center rounded-full px-7 text-base font-semibold">For Healthcare Institutions</a>
+                <Link to="/patient/assessment" className="nl-btn inline-flex h-12 items-center gap-2 rounded-full px-7 text-base">{t("hero.findCare")} <ArrowRight className="size-4" /></Link>
+                <a href="#institutions" className="nl-btn-ghost inline-flex h-12 items-center rounded-full px-7 text-base font-semibold">{t("hero.forInstitutions")}</a>
               </div>
             </Reveal>
             <Reveal on="mount" delay={0.3} className="mt-9 max-w-xl">
               <div className="nl-t-gold flex items-start gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--tone)_35%,transparent)] bg-[color-mix(in_oklab,var(--tone)_8%,transparent)] px-4 py-3 text-sm">
                 <ShieldAlert className="nl-text-tone mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                <p className="leading-relaxed text-muted-foreground"><span className="font-semibold text-foreground">If this may be an emergency, seek immediate professional medical care. </span>SaarthiX provides decision-support and care coordination. It does not provide a medical diagnosis or replace a qualified healthcare professional.</p>
+                <p className="leading-relaxed text-muted-foreground"><span className="font-semibold text-foreground">{t("hero.emergencyStrong")} </span>{t("hero.emergencyRest")}</p>
               </div>
             </Reveal>
           </div>
@@ -286,16 +288,17 @@ export function Faq() {
 }
 
 export function ClosingCta() {
+  const t = useT();
   return (
     <section className="px-5 pb-24 sm:px-8">
       <Reveal on="scroll">
         <div className="nl-card nl-edge relative mx-auto max-w-7xl overflow-hidden px-6 py-14 text-center sm:px-12 sm:py-20">
           <Backdrop />
-          <h2 className="mx-auto max-w-3xl font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl">Right care. Right place. <span className="nl-neon-text">Right time.</span></h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">Start with what you need today. SaarthiX helps with the rest of the journey.</p>
+          <h2 className="mx-auto max-w-3xl font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl">{t("cta.title1")} <span className="nl-neon-text">{t("cta.title2")}</span></h2>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">{t("cta.body")}</p>
           <div className="mt-9 flex flex-wrap justify-center gap-3.5">
-            <Link to="/patient/assessment" className="nl-btn inline-flex h-12 items-center gap-2 rounded-full px-8 text-base">Find Care <ArrowRight className="size-4" /></Link>
-            <Link to="/privacy" className="nl-btn-ghost inline-flex h-12 items-center rounded-full px-8 text-base font-semibold">Read safety and privacy</Link>
+            <Link to="/patient/assessment" className="nl-btn inline-flex h-12 items-center gap-2 rounded-full px-8 text-base">{t("hero.findCare")} <ArrowRight className="size-4" /></Link>
+            <Link to="/privacy" className="nl-btn-ghost inline-flex h-12 items-center rounded-full px-8 text-base font-semibold">{t("cta.readSafety")}</Link>
           </div>
         </div>
       </Reveal>
