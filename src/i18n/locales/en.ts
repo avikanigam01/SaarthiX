@@ -93,6 +93,11 @@ export const en = {
   "hero.forInstitutions": "For Healthcare Institutions",
   "hero.emergencyStrong": "If this may be an emergency, seek immediate professional medical care.",
   "hero.emergencyRest": "SaarthiX provides decision-support and care coordination. It does not provide a medical diagnosis or replace a qualified healthcare professional.",
+
+  "cta.title1": "Find the right care,",
+  "cta.title2": "without the extra trips.",
+  "cta.body": "Share how you feel, see which nearby facilities really offer the service you need, and stay connected after your visit.",
+  "cta.readSafety": "Read about safety & privacy",
 } as const;
 
 export type MessageKey = keyof typeof en;
