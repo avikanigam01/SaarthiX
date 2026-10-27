@@ -7,16 +7,20 @@ import { Backdrop, NeonChip, type Tone } from "@/components/landing/neon-ui";
 import { EcgLine } from "@/components/motion/ecg";
 import { Reveal } from "@/components/motion/primitives";
 import { SaarthiLogo } from "@/components/saarthi-ui";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useT } from "@/i18n";
+import type { MessageKey } from "@/i18n/locales";
 import { useAuth } from "@/lib/auth-context";
 import { homePathForRoles } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
-const sectionAnchors = [["#how-it-works", "How it works"], ["#capabilities", "Capabilities"], ["#institutions", "For you"], ["#faq", "FAQ"]] as const;
-const pageLinks = [["/how-it-works", "How it works"], ["/about", "About"]] as const;
+const sectionAnchors = [["#how-it-works", "nav.howItWorks"], ["#capabilities", "nav.capabilities"], ["#institutions", "nav.forYou"], ["#faq", "nav.faq"]] as const satisfies readonly (readonly [string, MessageKey])[];
+const pageLinks = [["/how-it-works", "nav.howItWorks"], ["/about", "nav.about"]] as const satisfies readonly (readonly [string, MessageKey])[];
 const linkClass = "rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-[var(--nl-cyan)] [&.active]:text-[var(--nl-cyan)]";
 
 /** Sticky header. `anchors` swaps the page links for in-page section links (used on the home page). */
 export function NeonHeader({ anchors = false }: { anchors?: boolean }) {
+  const t = useT();
   const { status, roles } = useAuth();
   const signedIn = status === "signed_in";
   const [open, setOpen] = useState(false);
@@ -24,30 +28,31 @@ export function NeonHeader({ anchors = false }: { anchors?: boolean }) {
   const items = (onClick?: () => void, extra = "") => (
     <>
       {anchors
-        ? sectionAnchors.map(([href, label]) => <a key={href} href={href} onClick={onClick} className={cn(linkClass, extra)}>{label}</a>)
-        : pageLinks.map(([to, label]) => <Link key={to} to={to} onClick={onClick} className={cn(linkClass, extra)}>{label}</Link>)}
-      <Link to="/privacy" onClick={onClick} className={cn(linkClass, extra)}>Safety & privacy</Link>
-      <Link to="/contact" onClick={onClick} className={cn(linkClass, extra)}>Contact</Link>
+        ? sectionAnchors.map(([href, key]) => <a key={href} href={href} onClick={onClick} className={cn(linkClass, extra)}>{t(key)}</a>)
+        : pageLinks.map(([to, key]) => <Link key={to} to={to} onClick={onClick} className={cn(linkClass, extra)}>{t(key)}</Link>)}
+      <Link to="/privacy" onClick={onClick} className={cn(linkClass, extra)}>{t("nav.privacy")}</Link>
+      <Link to="/contact" onClick={onClick} className={cn(linkClass, extra)}>{t("nav.contact")}</Link>
     </>
   );
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-[oklch(0.135_0.045_265/0.75)] backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link to="/" aria-label="SaarthiX home" className="transition-transform hover:scale-[1.03]"><SaarthiLogo /></Link>
+        <Link to="/" aria-label={t("common.homeAria")} className="transition-transform hover:scale-[1.03]"><SaarthiLogo /></Link>
         <nav aria-label="Main" className="hidden items-center gap-1 md:flex">{items()}</nav>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher className="text-foreground hover:bg-white/10" />
           <div className="hidden items-center gap-2 sm:flex">
             {signedIn ? (
-              <Link to={homePathForRoles(roles) as "/"} className="nl-btn inline-flex h-9 items-center rounded-full px-5 text-sm">My workspace</Link>
+              <Link to={homePathForRoles(roles) as "/"} className="nl-btn inline-flex h-9 items-center rounded-full px-5 text-sm">{t("auth.myWorkspace")}</Link>
             ) : (
               <>
-                <Link to="/login" className="nl-btn-ghost inline-flex h-9 items-center rounded-full px-4 text-sm font-semibold">Sign in</Link>
-                <Link to="/register" className="nl-btn inline-flex h-9 items-center rounded-full px-5 text-sm">Register</Link>
+                <Link to="/login" className="nl-btn-ghost inline-flex h-9 items-center rounded-full px-4 text-sm font-semibold">{t("auth.signIn")}</Link>
+                <Link to="/register" className="nl-btn inline-flex h-9 items-center rounded-full px-5 text-sm">{t("auth.register")}</Link>
               </>
             )}
           </div>
-          <button type="button" className="grid size-9 place-items-center rounded-full text-foreground hover:bg-white/10 md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open}>
+          <button type="button" className="grid size-9 place-items-center rounded-full text-foreground hover:bg-white/10 md:hidden" onClick={() => setOpen((v) => !v)} aria-label={open ? t("common.closeMenu") : t("common.openMenu")} aria-expanded={open}>
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
@@ -56,10 +61,10 @@ export function NeonHeader({ anchors = false }: { anchors?: boolean }) {
         <nav className="flex flex-col gap-1 px-5 py-3" aria-label="Mobile">
           {items(() => setOpen(false), "py-2.5")}
           <div className="mt-2 flex gap-2">
-            {signedIn ? <Link to={homePathForRoles(roles) as "/"} className="nl-btn inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm">My workspace</Link> : (
+            {signedIn ? <Link to={homePathForRoles(roles) as "/"} className="nl-btn inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm">{t("auth.myWorkspace")}</Link> : (
               <>
-                <Link to="/login" className="nl-btn-ghost inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm font-semibold">Sign in</Link>
-                <Link to="/register" className="nl-btn inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm">Register</Link>
+                <Link to="/login" className="nl-btn-ghost inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm font-semibold">{t("auth.signIn")}</Link>
+                <Link to="/register" className="nl-btn inline-flex h-10 flex-1 items-center justify-center rounded-full text-sm">{t("auth.register")}</Link>
               </>
             )}
           </div>
@@ -71,24 +76,25 @@ export function NeonHeader({ anchors = false }: { anchors?: boolean }) {
 }
 
 export function NeonFooter() {
+  const t = useT();
   return (
     <footer className="border-t border-white/10 bg-black/20">
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-[1.3fr_1fr_1fr]">
         <div>
           <SaarthiLogo />
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">Right Care. Right Place. Right Time. A healthcare access and referral-coordination platform.</p>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">{t("footer.tagline")}</p>
         </div>
         <nav aria-label="Explore" className="flex flex-col gap-2 text-sm text-muted-foreground">
-          <span className="font-display text-sm font-semibold text-foreground">Explore</span>
-          <Link to="/how-it-works" className="hover:text-[var(--nl-cyan)]">How it works</Link>
-          <Link to="/about" className="hover:text-[var(--nl-cyan)]">About</Link>
-          <Link to="/contact" className="hover:text-[var(--nl-cyan)]">Contact</Link>
+          <span className="font-display text-sm font-semibold text-foreground">{t("nav.explore")}</span>
+          <Link to="/how-it-works" className="hover:text-[var(--nl-cyan)]">{t("nav.howItWorks")}</Link>
+          <Link to="/about" className="hover:text-[var(--nl-cyan)]">{t("nav.about")}</Link>
+          <Link to="/contact" className="hover:text-[var(--nl-cyan)]">{t("nav.contact")}</Link>
         </nav>
         <nav aria-label="Legal" className="flex flex-col gap-2 text-sm text-muted-foreground">
-          <span className="font-display text-sm font-semibold text-foreground">Trust</span>
-          <Link to="/privacy" className="hover:text-[var(--nl-cyan)]">Safety & privacy</Link>
-          <Link to="/terms" className="hover:text-[var(--nl-cyan)]">Terms</Link>
-          <span>Decision-support, not diagnosis.</span>
+          <span className="font-display text-sm font-semibold text-foreground">{t("nav.trust")}</span>
+          <Link to="/privacy" className="hover:text-[var(--nl-cyan)]">{t("nav.privacy")}</Link>
+          <Link to="/terms" className="hover:text-[var(--nl-cyan)]">{t("nav.terms")}</Link>
+          <span>{t("footer.disclaimer")}</span>
         </nav>
       </div>
     </footer>
@@ -97,9 +103,10 @@ export function NeonFooter() {
 
 /** Dark page frame: skip link, header, content, footer. Pages supply their own <main id="main">. */
 export function NeonShell({ children, anchors = false }: { children: ReactNode; anchors?: boolean }) {
+  const t = useT();
   return (
     <div className="dark nl-root flex min-h-screen flex-col text-foreground">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-[var(--nl-cyan)] focus:px-4 focus:py-2 focus:text-black">Skip to content</a>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-[var(--nl-cyan)] focus:px-4 focus:py-2 focus:text-black">{t("common.skipToContent")}</a>
       <NeonHeader anchors={anchors} />
       <div className="flex-1">{children}</div>
       <NeonFooter />
