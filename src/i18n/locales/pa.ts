@@ -9,6 +9,7 @@ export const pa: Messages = {
   "common.closeMenu": "ਮੀਨੂ ਬੰਦ ਕਰੋ",
   "common.openNav": "ਨੈਵੀਗੇਸ਼ਨ ਖੋਲ੍ਹੋ",
   "common.closeNav": "ਨੈਵੀਗੇਸ਼ਨ ਬੰਦ ਕਰੋ",
+  "common.closeNavOverlay": "ਨੈਵੀਗੇਸ਼ਨ ਓਵਰਲੇ ਬੰਦ ਕਰੋ",
   "common.homeAria": "ਸਾਰਥੀX ਹੋਮ",
   "common.workspaceHome": "ਵਰਕਸਪੇਸ ਹੋਮ 'ਤੇ ਜਾਓ",
   "common.account": "ਖਾਤਾ",
@@ -84,4 +85,9 @@ export const pa: Messages = {
   "hero.forInstitutions": "ਸਿਹਤ ਸੰਸਥਾਵਾਂ ਲਈ",
   "hero.emergencyStrong": "ਜੇ ਇਹ ਐਮਰਜੈਂਸੀ ਹੋ ਸਕਦੀ ਹੈ, ਤਾਂ ਤੁਰੰਤ ਡਾਕਟਰ ਜਾਂ ਹਸਪਤਾਲ ਦੀ ਮਦਦ ਲਓ।",
   "hero.emergencyRest": "ਸਾਰਥੀX ਫ਼ੈਸਲੇ ਵਿੱਚ ਮਦਦ ਅਤੇ ਇਲਾਜ ਦਾ ਤਾਲਮੇਲ ਕਰਦਾ ਹੈ। ਇਹ ਨਿਦਾਨ ਨਹੀਂ ਕਰਦਾ ਅਤੇ ਯੋਗ ਡਾਕਟਰ ਦੀ ਥਾਂ ਨਹੀਂ ਲੈਂਦਾ।",
+
+  "cta.title1": "ਸਹੀ ਇਲਾਜ ਲੱਭੋ,",
+  "cta.title2": "ਬੇਵਜ੍ਹਾ ਗੇੜਿਆਂ ਤੋਂ ਬਿਨਾਂ।",
+  "cta.body": "ਆਪਣੀ ਤਕਲੀਫ਼ ਦੱਸੋ, ਦੇਖੋ ਕਿ ਨੇੜੇ ਦੇ ਕਿਹੜੇ ਹਸਪਤਾਲ ਵਿੱਚ ਉਹ ਸੇਵਾ ਸੱਚਮੁੱਚ ਮਿਲਦੀ ਹੈ, ਅਤੇ ਇਲਾਜ ਤੋਂ ਬਾਅਦ ਵੀ ਜੁੜੇ ਰਹੋ।",
+  "cta.readSafety": "ਸੁਰੱਖਿਆ ਅਤੇ ਨਿੱਜਤਾ ਬਾਰੇ ਪੜ੍ਹੋ",
 };
