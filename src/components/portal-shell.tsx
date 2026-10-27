@@ -11,43 +11,46 @@ import { ThemeToggle } from "@/components/motion/theme-toggle";
 import { ErrorState, LoadingState, SaarthiLogo } from "@/components/saarthi-ui";
 import { Button } from "@/components/ui/button";
 import { useRealtimeInvalidate } from "@/hooks/use-realtime";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useT } from "@/i18n";
+import type { MessageKey } from "@/i18n/locales";
 import { useAuth } from "@/lib/auth-context";
 import { HospitalGate, useHospital } from "@/lib/facility-context";
-import { canAccessPortal, ROLE_LABELS, type PortalKind } from "@/lib/roles";
+import { canAccessPortal, type PortalKind } from "@/lib/roles";
 import { countUnread } from "@/services/notifications";
 
 export type { PortalKind };
 
 const portalConfig = {
   patient: {
-    label: "Patient workspace",
+    label: "portal.patient",
     home: "/patient/dashboard",
     notifications: "/patient/notifications",
     items: [
-      ["Dashboard", "/patient/dashboard", LayoutDashboard], ["Assessment", "/patient/assessment", ClipboardList], ["Facilities", "/patient/facilities", Hospital], ["Journey", "/patient/journey", FileText], ["Referrals", "/patient/referrals", FileText], ["Visits", "/patient/visits", ClipboardList], ["Follow-ups", "/patient/followups", ClipboardList], ["Notifications", "/patient/notifications", Bell], ["Profile", "/patient/profile", Users], ["My Health QR", "/patient/health-record", ShieldCheck], ["Settings", "/patient/settings", Settings],
+      ["menu.dashboard", "/patient/dashboard", LayoutDashboard], ["menu.assessment", "/patient/assessment", ClipboardList], ["menu.facilities", "/patient/facilities", Hospital], ["menu.journey", "/patient/journey", FileText], ["menu.referrals", "/patient/referrals", FileText], ["menu.visits", "/patient/visits", ClipboardList], ["menu.followups", "/patient/followups", ClipboardList], ["menu.notifications", "/patient/notifications", Bell], ["menu.profile", "/patient/profile", Users], ["menu.healthQr", "/patient/health-record", ShieldCheck], ["menu.settings", "/patient/settings", Settings],
     ],
   },
   hospital: {
-    label: "Hospital workspace",
+    label: "portal.hospital",
     home: "/hospital/dashboard",
     notifications: "/hospital/notifications",
     items: [
-      ["Dashboard", "/hospital/dashboard", LayoutDashboard], ["Facility profile", "/hospital/profile", Hospital], ["Departments", "/hospital/departments", ClipboardList], ["Services", "/hospital/services", ClipboardList], ["Doctors", "/hospital/doctors", Users], ["Diagnostics", "/hospital/diagnostics", ClipboardList], ["Medicines", "/hospital/medicines", FileText], ["Referrals", "/hospital/referrals", FileText], ["Patients", "/hospital/patients", Users], ["Visits", "/hospital/visits", ClipboardList], ["Scan Health QR", "/hospital/scan-qr", ShieldCheck], ["Medicine forecast", "/hospital/forecast", ClipboardList], ["Follow-ups", "/hospital/followups", ClipboardList], ["Notifications", "/hospital/notifications", Bell], ["Settings", "/hospital/settings", Settings],
+      ["menu.dashboard", "/hospital/dashboard", LayoutDashboard], ["menu.facilityProfile", "/hospital/profile", Hospital], ["menu.departments", "/hospital/departments", ClipboardList], ["menu.services", "/hospital/services", ClipboardList], ["menu.doctors", "/hospital/doctors", Users], ["menu.diagnostics", "/hospital/diagnostics", ClipboardList], ["menu.medicines", "/hospital/medicines", FileText], ["menu.referrals", "/hospital/referrals", FileText], ["menu.patients", "/hospital/patients", Users], ["menu.visits", "/hospital/visits", ClipboardList], ["menu.scanQr", "/hospital/scan-qr", ShieldCheck], ["menu.forecast", "/hospital/forecast", ClipboardList], ["menu.followups", "/hospital/followups", ClipboardList], ["menu.notifications", "/hospital/notifications", Bell], ["menu.settings", "/hospital/settings", Settings],
     ],
   },
   coordinator: {
-    label: "Coordinator workspace",
+    label: "portal.coordinator",
     home: "/coordinator/dashboard",
     notifications: "/coordinator/notifications",
-    items: [["Dashboard", "/coordinator/dashboard", LayoutDashboard], ["Referrals", "/coordinator/referrals", FileText], ["Patients", "/coordinator/patients", Users], ["Facilities", "/coordinator/facilities", Hospital], ["Notifications", "/coordinator/notifications", Bell]],
+    items: [["menu.dashboard", "/coordinator/dashboard", LayoutDashboard], ["menu.referrals", "/coordinator/referrals", FileText], ["menu.patients", "/coordinator/patients", Users], ["menu.facilities", "/coordinator/facilities", Hospital], ["menu.notifications", "/coordinator/notifications", Bell]],
   },
   admin: {
-    label: "Administration workspace",
+    label: "portal.admin",
     home: "/admin/dashboard",
     notifications: "/admin/settings",
-    items: [["Dashboard", "/admin/dashboard", LayoutDashboard], ["Facilities", "/admin/facilities", Hospital], ["Users", "/admin/users", Users], ["Referrals", "/admin/referrals", FileText], ["Services", "/admin/services", ClipboardList], ["Inventory", "/admin/inventory", FileText], ["Analytics", "/admin/analytics", ClipboardList], ["Audit logs", "/admin/audit-logs", ShieldCheck], ["Settings", "/admin/settings", Settings]],
+    items: [["menu.dashboard", "/admin/dashboard", LayoutDashboard], ["menu.facilities", "/admin/facilities", Hospital], ["menu.users", "/admin/users", Users], ["menu.referrals", "/admin/referrals", FileText], ["menu.services", "/admin/services", ClipboardList], ["menu.inventory", "/admin/inventory", FileText], ["menu.analytics", "/admin/analytics", ClipboardList], ["menu.auditLogs", "/admin/audit-logs", ShieldCheck], ["menu.settings", "/admin/settings", Settings]],
   },
-} as const;
+} as const satisfies Record<string, { label: MessageKey; home: string; notifications: string; items: readonly (readonly [MessageKey, string, unknown])[] }>;
 
 function FullPage({ children }: { children: ReactNode }) {
   return <div className="grid min-h-screen place-items-center bg-prism-surface px-4"><div className="w-full max-w-md">{children}</div></div>;
@@ -59,6 +62,7 @@ function FullPage({ children }: { children: ReactNode }) {
  * Security in the database, so bypassing this component gives no access to data.
  */
 export function PortalShell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
+  const t = useT();
   const { status, roles, profile, refresh, signOut } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
@@ -68,7 +72,7 @@ export function PortalShell({ kind, children }: { kind: PortalKind; children: Re
   }, [status, navigate, pathname]);
 
   if (status === "loading" || status === "signed_out") {
-    return <FullPage><LoadingState label="Checking your session..." /></FullPage>;
+    return <FullPage><LoadingState label={t("auth.checkingSession")} /></FullPage>;
   }
   if (status === "error") return <FullPage><ErrorState onRetry={() => void refresh()} /></FullPage>;
 
@@ -76,9 +80,9 @@ export function PortalShell({ kind, children }: { kind: PortalKind; children: Re
     return (
       <FullPage>
         <div className="rounded-3xl border border-border bg-card p-8 text-center">
-          <h1 className="font-display text-xl font-bold">Account deactivated</h1>
-          <p className="mt-3 text-sm text-muted-foreground">This account has been deactivated. Please contact your administrator.</p>
-          <Button className="mt-6" variant="outline" onClick={() => void signOut()}>Sign out</Button>
+          <h1 className="font-display text-xl font-bold">{t("auth.deactivatedTitle")}</h1>
+          <p className="mt-3 text-sm text-muted-foreground">{t("auth.deactivatedBody")}</p>
+          <Button className="mt-6" variant="outline" onClick={() => void signOut()}>{t("auth.signOut")}</Button>
         </div>
       </FullPage>
     );
@@ -111,6 +115,7 @@ function FacilitySwitcher() {
 }
 
 function Shell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const { user, profile, roles, signOut } = useAuth();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
@@ -121,24 +126,26 @@ function Shell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
   useRealtimeInvalidate("notifications", [["unread-count", userId], ["notifications", userId]], { filter: `user_id=eq.${userId}`, enabled: Boolean(userId) });
 
   const unreadCount = unread.data ?? 0;
-  const roleLabel = roles.filter((r) => ROLE_LABELS[r]).map((r) => ROLE_LABELS[r]).find(Boolean);
+  const firstRole = roles[0];
+  const roleLabel = firstRole ? t(`role.${firstRole}` as MessageKey) : null;
 
   return (
     <div className="min-h-screen bg-prism-surface text-foreground">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2">Skip to main content</a>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-4 focus:py-2">{t("common.skipToMain")}</a>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-card/90 backdrop-blur-xl">
         <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen((value) => !value)} aria-label={open ? "Close navigation" : "Open navigation"} aria-expanded={open}>{open ? <X /> : <Menu />}</Button>
-            <Link to={config.home} aria-label="Go to workspace home" className="transition-transform hover:scale-[1.03]"><SaarthiLogo /></Link>
+            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen((value) => !value)} aria-label={open ? t("common.closeNav") : t("common.openNav")} aria-expanded={open}>{open ? <X /> : <Menu />}</Button>
+            <Link to={config.home} aria-label={t("common.workspaceHome")} className="transition-transform hover:scale-[1.03]"><SaarthiLogo /></Link>
           </div>
           <div className="hidden min-w-0 items-center gap-3 text-sm text-muted-foreground md:flex">
-            {kind === "hospital" ? <FacilitySwitcher /> : <span>{config.label}</span>}
+            {kind === "hospital" ? <FacilitySwitcher /> : <span>{t(config.label)}</span>}
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
+            <LanguageSwitcher compact />
             <ThemeToggle />
             {kind !== "admin" ? (
-              <Button asChild variant="ghost" size="icon" className="relative" aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}>
+              <Button asChild variant="ghost" size="icon" className="relative" aria-label={unreadCount > 0 ? t("common.notificationsUnread", { n: unreadCount }) : t("common.notifications")}>
                 <Link to={config.notifications}>
                   <Bell />
                   {unreadCount > 0 ? <span className="absolute right-1 top-1 grid min-w-4 animate-pulse-dot place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-4 text-white">{unreadCount > 9 ? "9+" : unreadCount}</span> : null}
@@ -146,29 +153,29 @@ function Shell({ kind, children }: { kind: PortalKind; children: ReactNode }) {
               </Button>
             ) : null}
             <div className="hidden text-right leading-tight sm:block">
-              <p className="max-w-[10rem] truncate text-sm font-medium">{profile?.full_name ?? "Account"}</p>
+              <p className="max-w-[10rem] truncate text-sm font-medium">{profile?.full_name ?? t("common.account")}</p>
               {roleLabel ? <p className="text-xs text-muted-foreground">{roleLabel}</p> : null}
             </div>
-            <Button variant="outline" size="sm" onClick={() => void signOut()}><LogOut aria-hidden="true" /><span className="hidden sm:inline">Sign out</span><span className="sr-only sm:hidden">Sign out</span></Button>
+            <Button variant="outline" size="sm" onClick={() => void signOut()}><LogOut aria-hidden="true" /><span className="hidden sm:inline">{t("auth.signOut")}</span><span className="sr-only sm:hidden">{t("auth.signOut")}</span></Button>
           </div>
         </div>
         {kind === "hospital" ? <div className="border-t border-border/60 px-4 py-2 text-sm md:hidden"><FacilitySwitcher /></div> : null}
       </header>
       <div className="mx-auto flex max-w-[1600px]">
         <aside className={`${open ? "translate-x-0" : "-translate-x-full"} fixed inset-y-16 left-0 z-30 w-72 overflow-y-auto border-r border-border bg-card p-4 transition-transform lg:sticky lg:top-16 lg:z-auto lg:h-[calc(100vh-4rem)] lg:w-64 lg:shrink-0 lg:translate-x-0 lg:bg-transparent`}>
-          <nav className="space-y-1" aria-label={`${config.label} navigation`}>
+          <nav className="space-y-1" aria-label={t("portal.navAria", { label: t(config.label) })}>
             {config.items.map(([label, to, Icon]) => {
               const active = pathname === to || pathname.startsWith(`${to}/`);
               return (
                 <Link key={to} to={to} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={`group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${active ? "bg-brand-soft text-brand shadow-sm" : "text-muted-foreground hover:translate-x-0.5 hover:bg-muted hover:text-foreground"}`}>
-                  <Icon className="size-4 transition-transform group-hover:scale-110" aria-hidden="true" /><span>{label}</span>{pathname === to ? <ChevronRight className="ml-auto size-4" aria-hidden="true" /> : null}
+                  <Icon className="size-4 transition-transform group-hover:scale-110" aria-hidden="true" /><span>{t(label)}</span>{pathname === to ? <ChevronRight className="ml-auto size-4" aria-hidden="true" /> : null}
                 </Link>
               );
             })}
           </nav>
-          <div className="mt-6 rounded-2xl border border-border bg-card/70 p-4"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">SaarthiX safety</p><p className="mt-2 text-xs leading-relaxed text-muted-foreground">Decision-support and care coordination, not diagnosis or autonomous treatment.</p></div>
+          <div className="mt-6 rounded-2xl border border-border bg-card/70 p-4"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand">{t("portal.safetyTitle")}</p><p className="mt-2 text-xs leading-relaxed text-muted-foreground">{t("portal.safetyBody")}</p></div>
         </aside>
-        {open ? <button className="fixed inset-x-0 bottom-0 top-16 z-20 bg-foreground/30 lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation overlay" /> : null}
+        {open ? <button className="fixed inset-x-0 bottom-0 top-16 z-20 bg-foreground/30 lg:hidden" onClick={() => setOpen(false)} aria-label={t("common.closeNavOverlay")} /> : null}
         <main id="main-content" className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10"><PageTransition routeKey={pathname}>{children}</PageTransition></main>
       </div>
     </div>
