@@ -9,6 +9,7 @@ export const gu: Messages = {
   "common.closeMenu": "મેનુ બંધ કરો",
   "common.openNav": "નેવિગેશન ખોલો",
   "common.closeNav": "નેવિગેશન બંધ કરો",
+  "common.closeNavOverlay": "નેવિગેશન ઓવરલે બંધ કરો",
   "common.homeAria": "સારથીX હોમ",
   "common.workspaceHome": "વર્કસ્પેસ હોમ પર જાઓ",
   "common.account": "ખાતું",
@@ -84,4 +85,9 @@ export const gu: Messages = {
   "hero.forInstitutions": "આરોગ્ય સંસ્થાઓ માટે",
   "hero.emergencyStrong": "જો આ કટોકટી હોઈ શકે, તો તરત જ ડૉક્ટર કે હોસ્પિટલની મદદ લો.",
   "hero.emergencyRest": "સારથીX નિર્ણયમાં મદદ અને સારવારનું સંકલન કરે છે. તે નિદાન કરતું નથી અને લાયક ડૉક્ટરનું સ્થાન લેતું નથી.",
+
+  "cta.title1": "સાચી સારવાર શોધો,",
+  "cta.title2": "બિનજરૂરી ધક્કા ખાધા વગર.",
+  "cta.body": "તમારી તકલીફ જણાવો, નજીકની કઈ હોસ્પિટલમાં તે સેવા ખરેખર મળે છે તે જુઓ, અને સારવાર પછી પણ જોડાયેલા રહો.",
+  "cta.readSafety": "સુરક્ષા અને ગોપનીયતા વિશે વાંચો",
 };
