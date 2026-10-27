@@ -86,7 +86,7 @@ async function callGemini(parts: Array<Record<string, unknown>>, systemPrompt: s
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemPrompt }] },
         contents: [{ role: "user", parts }],
-        generationConfig: { temperature: 0.2, maxOutputTokens },
+        generationConfig: { temperature: 0.2, maxOutputTokens, thinkingConfig: { thinkingBudget: 0 } },
       }),
       signal: controller.signal,
     });
