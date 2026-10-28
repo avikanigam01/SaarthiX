@@ -7,6 +7,9 @@ import { EcgLine } from "@/components/motion/ecg";
 import { Reveal } from "@/components/motion/primitives";
 import { SaarthiLogo } from "@/components/saarthi-ui";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useT } from "@/i18n";
+import type { MessageKey } from "@/i18n/locales";
 import { useAuth } from "@/lib/auth-context";
 import { canAccessPortal, homePathForRoles, safeRedirectPath, type PortalKind } from "@/lib/roles";
 import { cn } from "@/lib/utils";
@@ -15,40 +18,52 @@ import type { UserRole } from "@/types/database";
 
 type AuthMode = "login" | "register" | "forgot" | "reset";
 
-const authCopy: Record<AuthMode, readonly [string, string]> = {
-  login: ["Welcome back", "Sign in to continue your healthcare journey."],
-  register: ["Create your SaarthiX account", "Start a secure, patient-first care coordination journey."],
-  forgot: ["Reset your password", "Enter your account email and we'll help you regain access."],
-  reset: ["Choose a new password", "Set a new password for your SaarthiX account."],
+const authCopy: Record<AuthMode, readonly [MessageKey, MessageKey]> = {
+  login: ["authPage.login.title", "authPage.login.sub"],
+  register: ["authPage.register.title", "authPage.register.sub"],
+  forgot: ["authPage.forgot.title", "authPage.forgot.sub"],
+  reset: ["authPage.reset.title", "authPage.reset.sub"],
 };
 
-const sideCopy: Record<AuthMode, readonly [string, string]> = {
-  login: ["Pick up your care journey where you left it.", "Your visits, referrals and follow-ups stay connected to one account."],
-  register: ["Start one connected care journey.", "Find the right care, check availability before you travel, and keep every next step in one place."],
-  forgot: ["Get back in safely.", "We send a reset link to the email on your account. Nothing changes until you choose a new password."],
-  reset: ["Choose a strong new password.", "Use at least 8 characters. Mix letters, numbers and symbols for a stronger one."],
+const sideCopy: Record<AuthMode, readonly [MessageKey, MessageKey]> = {
+  login: ["authPage.sideLogin.title", "authPage.sideLogin.text"],
+  register: ["authPage.sideRegister.title", "authPage.sideRegister.text"],
+  forgot: ["authPage.sideForgot.title", "authPage.sideForgot.text"],
+  reset: ["authPage.sideReset.title", "authPage.sideReset.text"],
+};
+
+/** Messages that services/auth.ts returns in English, mapped to translatable keys. Unknown text is shown as-is. */
+const SERVER_ERROR_KEYS: Record<string, MessageKey> = {
+  "An account with this email already exists. Try signing in instead.": "authPage.srv.exists",
+  "That email or password isn't correct.": "authPage.srv.invalid",
+  "Please verify your email address before signing in.": "authPage.srv.notConfirmed",
+  "Please choose a password different from your current one.": "authPage.srv.samePassword",
+  "Please choose a stronger password (at least 8 characters).": "authPage.srv.weak",
+  "Too many attempts. Please wait a moment and try again.": "authPage.srv.rate",
+  "We couldn't reach the server. Check your connection and try again.": "authPage.srv.network",
+  "Something went wrong. Please try again.": "authPage.srv.generic",
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type AuthFormState = { firstName: string; lastName: string; email: string; password: string; agreed: boolean };
-type AuthFormErrors = Partial<Record<keyof AuthFormState, string>>;
+type AuthFormErrors = Partial<Record<keyof AuthFormState, MessageKey>>;
 
 function validateAuthForm(mode: AuthMode, form: AuthFormState): AuthFormErrors {
   const errors: AuthFormErrors = {};
   if (mode === "register") {
-    if (!form.firstName.trim()) errors.firstName = "Enter your first name.";
-    if (!form.lastName.trim()) errors.lastName = "Enter your last name.";
+    if (!form.firstName.trim()) errors.firstName = "authPage.err.firstName";
+    if (!form.lastName.trim()) errors.lastName = "authPage.err.lastName";
   }
   if (mode !== "reset") {
-    if (!form.email.trim()) errors.email = "Enter your email address.";
-    else if (!EMAIL_PATTERN.test(form.email.trim())) errors.email = "Enter a valid email address.";
+    if (!form.email.trim()) errors.email = "authPage.err.emailRequired";
+    else if (!EMAIL_PATTERN.test(form.email.trim())) errors.email = "authPage.err.emailInvalid";
   }
   if (mode === "login" || mode === "register" || mode === "reset") {
-    if (!form.password) errors.password = "Enter a password.";
-    else if (mode !== "login" && form.password.length < 8) errors.password = "Use at least 8 characters.";
+    if (!form.password) errors.password = "authPage.err.passwordRequired";
+    else if (mode !== "login" && form.password.length < 8) errors.password = "authPage.err.passwordMin";
   }
-  if (mode === "register" && !form.agreed) errors.agreed = "You must agree to the terms and privacy notice to continue.";
+  if (mode === "register" && !form.agreed) errors.agreed = "authPage.err.agree";
   return errors;
 }
 
@@ -63,9 +78,17 @@ function passwordStrength(value: string): number {
   return Math.max(score, 1);
 }
 
-const strengthMeta = [
-  ["", "nl-t-rose"], ["Weak", "nl-t-rose"], ["Fair", "nl-t-gold"], ["Good", "nl-t-cyan"], ["Strong", "nl-t-mint"],
-] as const;
+const strengthMeta: ReadonlyArray<readonly [MessageKey | null, string]> = [
+  [null, "nl-t-rose"], ["authPage.strength.weak", "nl-t-rose"], ["authPage.strength.fair", "nl-t-gold"], ["authPage.strength.good", "nl-t-cyan"], ["authPage.strength.strong", "nl-t-mint"],
+];
+
+/** Fills {name} tokens inside a translated sentence with React nodes, so link position follows each language's word order. */
+function withNodes(text: string, nodes: Record<string, ReactNode>): ReactNode[] {
+  return text.split(/(\{\w+\})/g).map((part, i) => {
+    const m = /^\{(\w+)\}$/.exec(part);
+    return m && m[1] && m[1] in nodes ? <span key={i}>{nodes[m[1]]}</span> : part;
+  });
+}
 
 /* ------------------------------------------------------------------ pieces */
 
@@ -101,7 +124,10 @@ function AuthScene() {
 }
 
 function SidePanel({ mode }: { mode: AuthMode }) {
-  const [title, text] = sideCopy[mode];
+  const t = useT();
+  const [titleKey, textKey] = sideCopy[mode];
+  const title = t(titleKey);
+  const text = t(textKey);
   return (
     <div className="nl-card nl-edge nl-t-cyan relative hidden overflow-hidden p-8 lg:flex lg:flex-col">
       <SaarthiLogo />
@@ -111,7 +137,7 @@ function SidePanel({ mode }: { mode: AuthMode }) {
       <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{text}</p>
       <div className="nl-t-gold mt-auto flex items-start gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--tone)_35%,transparent)] bg-[color-mix(in_oklab,var(--tone)_8%,transparent)] px-4 py-3 text-xs">
         <ShieldAlert className="nl-text-tone mt-0.5 size-4 shrink-0" aria-hidden="true" />
-        <p className="leading-relaxed text-muted-foreground">SaarthiX provides decision-support and care coordination. It does not provide a medical diagnosis or replace a qualified healthcare professional.</p>
+        <p className="leading-relaxed text-muted-foreground">{t("authPage.disclaimer")}</p>
       </div>
     </div>
   );
@@ -122,6 +148,7 @@ const inputClass = "h-12 rounded-xl border-white/15 bg-black/30 pl-11 text-base 
 function Field({
   id, label, placeholder, type = "text", value, onChange, error, autoComplete, icon: Icon, children,
 }: { id: string; label: string; placeholder: string; type?: string; value: string; onChange: (value: string) => void; error?: string | undefined; autoComplete?: string | undefined; icon: typeof Mail; children?: ReactNode }) {
+  const t = useT();
   const errorId = `${id}-error`;
   const isPassword = type === "password";
   const [shown, setShown] = useState(false);
@@ -143,7 +170,7 @@ function Field({
           aria-describedby={error ? errorId : undefined}
         />
         {isPassword ? (
-          <button type="button" onClick={() => setShown((v) => !v)} aria-label={shown ? "Hide password" : "Show password"} aria-pressed={shown} className="absolute right-2 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/10 hover:text-[var(--nl-cyan)]">
+          <button type="button" onClick={() => setShown((v) => !v)} aria-label={shown ? t("authPage.hidePassword") : t("authPage.showPassword")} aria-pressed={shown} className="absolute right-2 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-white/10 hover:text-[var(--nl-cyan)]">
             {shown ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         ) : null}
@@ -155,15 +182,17 @@ function Field({
 }
 
 function StrengthMeter({ value }: { value: string }) {
+  const t = useT();
   if (!value) return null;
   const score = passwordStrength(value);
-  const [label, tone] = strengthMeta[score] ?? strengthMeta[1];
+  const [labelKey, tone] = strengthMeta[score] ?? strengthMeta[1] ?? [null, "nl-t-rose"];
+  const label = labelKey ? t(labelKey) : "";
   return (
     <div className={cn("mt-2.5", tone)} role="status" aria-live="polite">
       <div className="flex gap-1.5" aria-hidden="true">
         {[1, 2, 3, 4].map((n) => <span key={n} className={cn("h-1.5 flex-1 rounded-full transition-all duration-500", n <= score ? "nl-bg-tone" : "bg-white/10")} />)}
       </div>
-      <p className="nl-text-tone mt-1.5 text-xs font-semibold">Password strength: {label}</p>
+      <p className="nl-text-tone mt-1.5 text-xs font-semibold">{t("authPage.strength.label", { label })}</p>
     </div>
   );
 }
@@ -185,6 +214,7 @@ const linkClass = "font-medium text-[var(--nl-cyan)] hover:underline";
 /* -------------------------------------------------------------------- page */
 
 export function AuthPage({ mode }: { mode: AuthMode }) {
+  const t = useT();
   const copy = authCopy[mode];
   const navigate = useNavigate();
   const [form, setForm] = useState<AuthFormState>({ firstName: "", lastName: "", email: "", password: "", agreed: false });
@@ -192,7 +222,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<MessageKey | null>(null);
   const [shake, setShake] = useState(false);
 
   const { status: authStatus, roles: currentRoles } = useAuth();
@@ -266,11 +296,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
           return;
         }
         setSubmitted(true);
-        setSuccessMessage(
-          result.data.emailConfirmationRequired
-            ? "Account created. Please check your email to verify your address before signing in."
-            : "Account created. You're signed in."
-        );
+        setSuccessMessage(result.data.emailConfirmationRequired ? "authPage.msg.created" : "authPage.msg.createdSignedIn");
         if (!result.data.emailConfirmationRequired) {
           await goAfterAuth();
         }
@@ -284,7 +310,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
           return;
         }
         setSubmitted(true);
-        setSuccessMessage("If an account exists for that email, a reset link has been sent.");
+        setSuccessMessage("authPage.msg.resetSent");
         return;
       }
 
@@ -295,7 +321,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
           return;
         }
         setSubmitted(true);
-        setSuccessMessage("Your password has been updated. You can now sign in.");
+        setSuccessMessage("authPage.msg.passwordUpdated");
       }
     } finally {
       setSubmitting(false);
@@ -304,13 +330,17 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
 
   const showSuccessOnly = submitted && successMessage && (mode === "forgot" || mode === "reset" || mode === "register");
   const showStrength = mode === "register" || mode === "reset";
-  const buttonLabel = mode === "login" ? "Sign in" : mode === "register" ? "Create account" : mode === "forgot" ? "Send reset link" : "Update password";
+  const buttonLabel = t(mode === "login" ? "authPage.btn.signIn" : mode === "register" ? "authPage.btn.createAccount" : mode === "forgot" ? "authPage.btn.sendReset" : "authPage.btn.updatePassword");
+  const serverErrorText = serverError ? t(SERVER_ERROR_KEYS[serverError] ?? "authPage.srv.generic") : null;
 
   return (
     <div className="dark nl-root flex min-h-screen flex-col text-foreground">
       <header className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Link to="/" aria-label="SaarthiX home" className="transition-transform hover:scale-[1.03] lg:invisible"><SaarthiLogo /></Link>
-        <Link to="/" className="nl-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-semibold"><ArrowLeft className="size-4" aria-hidden="true" />Back to home</Link>
+        <Link to="/" aria-label={t("authPage.homeAria")} className="transition-transform hover:scale-[1.03] lg:invisible"><SaarthiLogo /></Link>
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher className="text-foreground hover:bg-white/10" />
+          <Link to="/" className="nl-btn-ghost inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-sm font-semibold"><ArrowLeft className="size-4" aria-hidden="true" />{t("authPage.backHome")}</Link>
+        </div>
       </header>
 
       <main id="main" className="relative flex flex-1 items-center overflow-hidden px-5 pb-12 pt-4 sm:px-8">
@@ -322,50 +352,50 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
             <div className="nl-card nl-edge nl-t-cyan h-full p-6 sm:p-9">
               <div className={cn("mx-auto max-w-md", shake && "nl-shake")}>
                 <div className="flex items-center gap-3 lg:hidden"><SaarthiLogo /></div>
-                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight lg:mt-0 sm:text-4xl">{copy[0]}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">{copy[1]}</p>
+                <h2 className="mt-5 font-display text-3xl font-bold tracking-tight lg:mt-0 sm:text-4xl">{t(copy[0])}</h2>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">{t(copy[1])}</p>
 
                 {showSuccessOnly ? (
-                  <SuccessBurst message={successMessage}>
-                    <Link to="/login" className="nl-btn inline-flex h-11 items-center gap-2 rounded-full px-6 text-sm">Go to sign in <ArrowRight className="size-4" aria-hidden="true" /></Link>
+                  <SuccessBurst message={t(successMessage)}>
+                    <Link to="/login" className="nl-btn inline-flex h-11 items-center gap-2 rounded-full px-6 text-sm">{t("authPage.goSignIn")} <ArrowRight className="size-4" aria-hidden="true" /></Link>
                   </SuccessBurst>
                 ) : (
                   <form noValidate onSubmit={handleSubmit} className="mt-7 space-y-4">
-                    {serverError ? <div role="alert" className="rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm font-medium text-destructive">{serverError}</div> : null}
+                    {serverError ? <div role="alert" className="rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm font-medium text-destructive">{serverErrorText}</div> : null}
                     {mode === "register" ? (
                       <div className="grid gap-4 sm:grid-cols-2">
-                        <Field id="first-name" label="First name" placeholder="Enter your first name" icon={UserRound} value={form.firstName} onChange={(value) => updateField("firstName", value)} error={errors.firstName} autoComplete="given-name" />
-                        <Field id="last-name" label="Last name" placeholder="Enter your last name" icon={UserRound} value={form.lastName} onChange={(value) => updateField("lastName", value)} error={errors.lastName} autoComplete="family-name" />
+                        <Field id="first-name" label={t("authPage.field.firstName")} placeholder={t("authPage.ph.firstName")} icon={UserRound} value={form.firstName} onChange={(value) => updateField("firstName", value)} error={errors.firstName ? t(errors.firstName) : undefined} autoComplete="given-name" />
+                        <Field id="last-name" label={t("authPage.field.lastName")} placeholder={t("authPage.ph.lastName")} icon={UserRound} value={form.lastName} onChange={(value) => updateField("lastName", value)} error={errors.lastName ? t(errors.lastName) : undefined} autoComplete="family-name" />
                       </div>
                     ) : null}
-                    {mode !== "reset" ? <Field id="email" label="Email address" type="email" placeholder="you@example.com" icon={Mail} value={form.email} onChange={(value) => updateField("email", value)} error={errors.email} autoComplete="email" /> : null}
+                    {mode !== "reset" ? <Field id="email" label={t("authPage.field.email")} type="email" placeholder="you@example.com" icon={Mail} value={form.email} onChange={(value) => updateField("email", value)} error={errors.email ? t(errors.email) : undefined} autoComplete="email" /> : null}
                     {mode === "register" || mode === "login" || mode === "reset" ? (
-                      <Field id="password" label="Password" type="password" placeholder="Enter your password" icon={Lock} value={form.password} onChange={(value) => updateField("password", value)} error={errors.password} autoComplete={mode === "login" ? "current-password" : "new-password"}>
+                      <Field id="password" label={t("authPage.field.password")} type="password" placeholder={t("authPage.ph.password")} icon={Lock} value={form.password} onChange={(value) => updateField("password", value)} error={errors.password ? t(errors.password) : undefined} autoComplete={mode === "login" ? "current-password" : "new-password"}>
                         {showStrength ? <StrengthMeter value={form.password} /> : null}
                       </Field>
                     ) : null}
-                    {mode === "login" ? <div className="-mt-1 text-right text-sm"><Link to="/forgot-password" className={linkClass}>Forgot password?</Link></div> : null}
+                    {mode === "login" ? <div className="-mt-1 text-right text-sm"><Link to="/forgot-password" className={linkClass}>{t("authPage.forgotLink")}</Link></div> : null}
                     {mode === "register" ? (
                       <div>
                         <label className="flex items-start gap-2.5 text-sm text-muted-foreground">
                           <input type="checkbox" className="mt-1 size-4 accent-[var(--nl-cyan)]" checked={form.agreed} onChange={(event) => updateField("agreed", event.target.checked)} aria-invalid={errors.agreed ? true : undefined} aria-describedby={errors.agreed ? "agreed-error" : undefined} />
-                          <span>I agree to the SaarthiX <Link to="/terms" className={linkClass}>terms</Link> and <Link to="/privacy" className={linkClass}>privacy notice</Link>.</span>
+                          <span>{withNodes(t("authPage.agree"), { terms: <Link to="/terms" className={linkClass}>{t("authPage.termsLink")}</Link>, privacy: <Link to="/privacy" className={linkClass}>{t("authPage.privacyLink")}</Link> })}</span>
                         </label>
-                        {errors.agreed ? <span id="agreed-error" role="alert" className="mt-1.5 block text-xs font-medium text-destructive">{errors.agreed}</span> : null}
+                        {errors.agreed ? <span id="agreed-error" role="alert" className="mt-1.5 block text-xs font-medium text-destructive">{t(errors.agreed)}</span> : null}
                       </div>
                     ) : null}
                     <button type="submit" disabled={submitting} className="nl-btn inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-base disabled:pointer-events-none disabled:opacity-70">
-                      {submitting ? <><Loader2 className="nl-spinner size-4" aria-hidden="true" />Please wait…</> : <>{buttonLabel}<ArrowRight className="size-4" aria-hidden="true" /></>}
+                      {submitting ? <><Loader2 className="nl-spinner size-4" aria-hidden="true" />{t("authPage.wait")}</> : <>{buttonLabel}<ArrowRight className="size-4" aria-hidden="true" /></>}
                     </button>
                   </form>
                 )}
 
                 <div className="mt-6 flex flex-wrap justify-between gap-3 text-sm text-muted-foreground">
-                  {mode === "login" ? <span>New to SaarthiX? <Link to="/register" className={linkClass}>Create an account</Link></span> : null}
-                  {mode === "register" ? <span>Already have an account? <Link to="/login" className={linkClass}>Sign in</Link></span> : null}
-                  {mode === "forgot" ? <Link to="/login" className={linkClass}>Back to sign in</Link> : null}
+                  {mode === "login" ? <span>{t("authPage.newHere")} <Link to="/register" className={linkClass}>{t("authPage.createLink")}</Link></span> : null}
+                  {mode === "register" ? <span>{t("authPage.haveAccount")} <Link to="/login" className={linkClass}>{t("authPage.signInLink")}</Link></span> : null}
+                  {mode === "forgot" ? <Link to="/login" className={linkClass}>{t("authPage.backSignIn")}</Link> : null}
                 </div>
-                {mode === "register" ? <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-relaxed text-muted-foreground">Access roles are assigned and verified by authorized administrators. You cannot register as an administrator from this form.</p> : null}
+                {mode === "register" ? <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-relaxed text-muted-foreground">{t("authPage.adminNote")}</p> : null}
               </div>
             </div>
           </Reveal>
